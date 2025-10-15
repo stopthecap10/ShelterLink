@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.15",
+    "http-proxy-middleware": "^3.0.5",
     "postcss": "^8.4.29",
     "tailwindcss": "^3.3.3"
   },
