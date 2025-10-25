@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
 import { SocketProvider } from './contexts/SocketContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 
@@ -19,6 +20,11 @@ import JobDetailPage from './pages/JobDetailPage';
 import MessagesPage from './pages/MessagesPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
+import ImpactDashboard from './components/ImpactDashboard';
+import MobileOptimization from './components/MobileOptimization';
+import PerformanceOptimization from './components/PerformanceOptimization';
+import RealDemo from './components/RealDemo';
+import LanguageOptions from './components/LanguageOptions';
 
 // Create Material-UI theme
 const theme = createTheme({
@@ -85,11 +91,12 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <SocketProvider>
-          <Router>
-            <div className="App">
-              <Routes>
+      <LanguageProvider>
+        <AuthProvider>
+          <SocketProvider>
+            <Router>
+              <div className="App">
+                <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
@@ -140,15 +147,56 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/impact"
+                  element={
+                    <Layout>
+                      <ImpactDashboard />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/mobile"
+                  element={
+                    <Layout>
+                      <MobileOptimization />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/performance"
+                  element={
+                    <Layout>
+                      <PerformanceOptimization />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/demo"
+                  element={
+                    <Layout>
+                      <RealDemo />
+                    </Layout>
+                  }
+                />
+                <Route
+                  path="/languages"
+                  element={
+                    <Layout>
+                      <LanguageOptions />
+                    </Layout>
+                  }
+                />
 
                 {/* Redirect unknown routes */}
                 <Route path="/404" element={<NotFoundPage />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Routes>
-            </div>
-          </Router>
-        </SocketProvider>
-      </AuthProvider>
+              </div>
+            </Router>
+          </SocketProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

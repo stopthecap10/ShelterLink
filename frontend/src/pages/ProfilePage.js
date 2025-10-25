@@ -13,34 +13,19 @@ import {
   MenuItem,
   Chip,
   Avatar,
-  Divider,
   CircularProgress,
   Alert,
-  Tabs,
-  Tab,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   IconButton,
 } from '@mui/material';
 import {
   Person,
   Business,
-  LocationOn,
-  Phone,
-  Email,
-  Work,
-  People,
   Edit,
   Save,
   Cancel,
-  Add,
-  Delete,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useForm, Controller } from 'react-hook-form';
-import axios from 'axios';
 
 const ProfilePage = () => {
   const { user, profile, updateProfile } = useAuth();
@@ -48,7 +33,7 @@ const ProfilePage = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [editing, setEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
+  // const [activeTab, setActiveTab] = useState(0);
 
   const {
     register,

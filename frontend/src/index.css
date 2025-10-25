@@ -1,8 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -11,6 +11,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #fafafa;
+  line-height: 1.6;
 }
 
 code {
@@ -25,116 +27,28 @@ code {
 
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
 }
 
-/* Custom components */
-.btn-primary {
-  @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+/* Smooth transitions for all elements */
+* {
+  transition: all 0.2s ease-in-out;
 }
 
-.btn-secondary {
-  @apply bg-secondary-200 hover:bg-secondary-300 text-secondary-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-}
-
-.btn-outline {
-  @apply border border-primary-600 text-primary-600 hover:bg-primary-50 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
-}
-
-.card {
-  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
-}
-
-.input-field {
-  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
-}
-
-/* Loading spinner */
-.spinner {
-  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600;
-}
-
-/* Map container */
-.map-container {
-  height: 400px;
-  width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-/* Message bubble styles */
-.message-bubble {
-  @apply max-w-xs lg:max-w-md px-4 py-2 rounded-lg;
-}
-
-.message-sent {
-  @apply bg-primary-600 text-white ml-auto;
-}
-
-.message-received {
-  @apply bg-gray-200 text-gray-800 mr-auto;
-}
-
-/* Rating stars */
-.rating-stars {
-  @apply flex space-x-1;
-}
-
-.star {
-  @apply w-5 h-5;
-}
-
-.star-filled {
-  @apply text-yellow-400;
-}
-
-.star-empty {
-  @apply text-gray-300;
-}
-
-/* Status badges */
-.status-badge {
-  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-}
-
-.status-active {
-  @apply bg-green-100 text-green-800;
-}
-
-.status-pending {
-  @apply bg-yellow-100 text-yellow-800;
-}
-
-.status-inactive {
-  @apply bg-red-100 text-red-800;
-}
-
-.status-verified {
-  @apply bg-blue-100 text-blue-800;
-}
-
-/* Responsive grid */
-.grid-responsive {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
-}
-
-/* Animation classes */
-.fade-in {
-  animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
+/* Custom animations */
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -142,15 +56,280 @@ code {
   }
 }
 
-.slide-in {
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
+@keyframes fadeInLeft {
   from {
-    transform: translateX(-100%);
+    opacity: 0;
+    transform: translateX(-30px);
   }
   to {
+    opacity: 1;
     transform: translateX(0);
   }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Utility classes */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.fade-in-left {
+  animation: fadeInLeft 0.6s ease-out;
+}
+
+.fade-in-right {
+  animation: fadeInRight 0.6s ease-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Focus styles for accessibility */
+*:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Button hover effects */
+.MuiButton-root {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.MuiButton-root:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Card hover effects */
+.MuiCard-root {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.MuiCard-root:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Input focus effects */
+.MuiTextField-root .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #667eea !important;
+  border-width: 2px !important;
+}
+
+.MuiTextField-root .MuiInputLabel-root.Mui-focused {
+  color: #667eea !important;
+}
+
+/* Chip hover effects */
+.MuiChip-root {
+  transition: all 0.2s ease-in-out !important;
+}
+
+.MuiChip-root:hover {
+  transform: scale(1.05);
+}
+
+/* Avatar hover effects */
+.MuiAvatar-root {
+  transition: all 0.3s ease-in-out !important;
+}
+
+.MuiAvatar-root:hover {
+  transform: scale(1.1);
+}
+
+/* Typography improvements */
+.MuiTypography-h1 {
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.MuiTypography-h2 {
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.MuiTypography-h3 {
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.MuiTypography-h4 {
+  font-weight: 600 !important;
+}
+
+.MuiTypography-h5 {
+  font-weight: 600 !important;
+}
+
+.MuiTypography-h6 {
+  font-weight: 600 !important;
+}
+
+/* Custom gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Custom shadows */
+.shadow-soft {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.shadow-medium {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+}
+
+.shadow-strong {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Responsive text */
+@media (max-width: 600px) {
+  .MuiTypography-h1 {
+    font-size: 2rem !important;
+  }
+  
+  .MuiTypography-h2 {
+    font-size: 1.75rem !important;
+  }
+  
+  .MuiTypography-h3 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  a, a:visited {
+    text-decoration: underline;
+  }
+  
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .MuiButton-root {
+    border: 2px solid currentColor !important;
+  }
+  
+  .MuiCard-root {
+    border: 1px solid currentColor !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #ffffff;
+  }
+}
+
+/* Custom selection color */
+::selection {
+  background: rgba(102, 126, 234, 0.3);
+  color: inherit;
+}
+
+::-moz-selection {
+  background: rgba(102, 126, 234, 0.3);
+  color: inherit;
 }

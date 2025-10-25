@@ -13,7 +13,6 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  Divider,
   CircularProgress,
   Alert,
   InputAdornment,

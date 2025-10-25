@@ -17,14 +17,16 @@ import {
 import { Login as LoginIcon, Home } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const { login, error, clearError } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  // const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const {
     register,
@@ -103,7 +105,7 @@ const LoginPage = () => {
           <Box component="form" onSubmit={handleSubmit(onSubmit)}>
             <TextField
               fullWidth
-              label="Email Address"
+              label={t('emailAddress')}
               type="email"
               margin="normal"
               autoComplete="email"
@@ -121,7 +123,7 @@ const LoginPage = () => {
 
             <TextField
               fullWidth
-              label="Password"
+              label={t('password')}
               type="password"
               margin="normal"
               autoComplete="current-password"
@@ -147,7 +149,7 @@ const LoginPage = () => {
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                'Sign In'
+                t('signIn')
               )}
             </Button>
 
@@ -170,7 +172,7 @@ const LoginPage = () => {
 
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Don't have an account?
+                {t('dontHaveAccount')}
               </Typography>
               <Button
                 component={RouterLink}
@@ -179,7 +181,7 @@ const LoginPage = () => {
                 fullWidth
                 size="large"
               >
-                Create Account
+                {t('createAccount')}
               </Button>
             </Box>
           </Box>

@@ -22,13 +22,15 @@ import {
 import { PersonAdd as PersonAddIcon, Home } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const { register: registerUser, error, clearError } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  // const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const {
     register,
@@ -211,7 +213,7 @@ const RegisterPage = () => {
                     render={({ field }) => (
                       <Select
                         {...field}
-                        label="I am a..."
+                        label={t('iAmA')}
                         error={!!errors.userType}
                       >
                         <MenuItem value="individual">Individual seeking shelter</MenuItem>
@@ -239,7 +241,7 @@ const RegisterPage = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Email Address"
+                  label={t('emailAddress')}
                   type="email"
                   autoComplete="email"
                   {...register('email', {
@@ -257,7 +259,7 @@ const RegisterPage = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Password"
+                  label={t('password')}
                   type="password"
                   autoComplete="new-password"
                   {...register('password', {
@@ -563,7 +565,7 @@ const RegisterPage = () => {
                   {loading ? (
                     <CircularProgress size={24} color="inherit" />
                   ) : (
-                    'Create Account'
+                    t('createAccount')
                   )}
                 </Button>
               </Grid>

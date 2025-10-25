@@ -2,22 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
+  Container,
   Typography,
-  Grid,
+  Button,
   Card,
   CardContent,
   CardActions,
-  Button,
-  Chip,
+  Grid,
   TextField,
+  InputAdornment,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
+  Chip,
+  Avatar,
+  IconButton,
   Pagination,
   CircularProgress,
   Alert,
-  InputAdornment,
+  Fade,
+  Zoom,
+  Slide,
+  useTheme,
+  useMediaQuery,
+  Stack,
+  Divider,
 } from '@mui/material';
 import {
   Search,
@@ -26,239 +36,434 @@ import {
   Business,
   AttachMoney,
   Schedule,
+  ArrowBack,
+  Home,
   Star,
+  TrendingUp,
+  People,
+  AccessTime,
+  School,
+  Security,
+  Speed,
 } from '@mui/icons-material';
-import axios from 'axios';
+import { useLanguage } from '../contexts/LanguageContext';
+import { mockJobService } from '../api/mockData';
 
 const JobsPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  
-  const [filters, setFilters] = useState({
-    search: '',
-    city: '',
-    state: '',
-    type: '',
-    compensationType: '',
-    experienceLevel: '',
-  });
-
-  useEffect(() => {
-    fetchJobs();
-  }, [page, filters]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [location, setLocation] = useState('');
+  const [jobType, setJobType] = useState('');
+  const [sortBy, setSortBy] = useState('date');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(6);
 
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      setError(null);
-      
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '12',
-        ...filters,
-      });
-
-      const response = await axios.get(`/api/jobs?${params}`);
-      setJobs(response.data.jobs);
-      setTotalPages(response.data.pagination.pages);
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-      setError('Failed to load jobs. Please try again.');
+      const response = await mockJobService.getJobs();
+      setJobs(response.jobs || []);
+    } catch (err) {
+      setError('Failed to load jobs');
+      console.error('Error fetching jobs:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setPage(1);
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  const getJobTypeIcon = (type) => {
+    const iconMap = {
+      'Full-time': <Work />,
+      'Part-time': <Schedule />,
+      'Contract': <Business />,
+      'Internship': <School />,
+      'Volunteer': <People />,
+    };
+    return iconMap[type] || <Work />;
   };
 
-  const formatSalary = (compensation) => {
-    if (compensation.type === 'volunteer') return 'Volunteer';
-    if (compensation.type === 'contract') return 'Contract';
-    if (compensation.min && compensation.max) {
-      return `$${compensation.min} - $${compensation.max}`;
+  const getJobTypeColor = (type) => {
+    const colorMap = {
+      'Full-time': 'success',
+      'Part-time': 'info',
+      'Contract': 'warning',
+      'Internship': 'secondary',
+      'Volunteer': 'primary',
+    };
+    return colorMap[type] || 'default';
+  };
+
+  const filteredJobs = jobs.filter(job => {
+    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         job.company.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLocation = !location || job.location.address.city.toLowerCase().includes(location.toLowerCase());
+    const matchesType = !jobType || job.type === jobType;
+    
+    return matchesSearch && matchesLocation && matchesType;
+  });
+
+  const sortedJobs = [...filteredJobs].sort((a, b) => {
+    switch (sortBy) {
+      case 'date':
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      case 'title':
+        return a.title.localeCompare(b.title);
+      case 'salary':
+        return (b.salary?.min || 0) - (a.salary?.min || 0);
+      default:
+        return 0;
     }
-    if (compensation.min) return `$${compensation.min}+`;
-    return 'Salary negotiable';
+  });
+
+  const totalPages = Math.ceil(sortedJobs.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedJobs = sortedJobs.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
-  if (loading && jobs.length === 0) {
+  if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-        <CircularProgress />
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
       </Box>
     );
   }
 
   return (
-    <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
-          Job Opportunities
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Find employment opportunities and build your career
-        </Typography>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      {/* Hero Section */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+          color: 'white',
+          py: 6,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Background Pattern */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+            zIndex: 1,
+          }}
+        />
+        
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
+          <Fade in timeout={800}>
+            <Box>
+              {/* Navigation */}
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+                <Button
+                  startIcon={<ArrowBack />}
+                  onClick={() => navigate('/')}
+                  sx={{ 
+                    mr: 2, 
+                    color: 'white',
+                    borderColor: 'rgba(255,255,255,0.3)',
+                    '&:hover': {
+                      borderColor: 'white',
+                      bgcolor: 'rgba(255,255,255,0.1)',
+                    }
+                  }}
+                  variant="outlined"
+                >
+                  Back to Home
+                </Button>
+                <Button
+                  startIcon={<Home />}
+                  onClick={() => navigate('/')}
+                  sx={{ 
+                    color: 'white',
+                    borderColor: 'rgba(255,255,255,0.3)',
+                    '&:hover': {
+                      borderColor: 'white',
+                      bgcolor: 'rgba(255,255,255,0.1)',
+                    }
+                  }}
+                  variant="outlined"
+                >
+                  Home
+                </Button>
+              </Box>
+
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 800,
+                  mb: 2,
+                  fontSize: { xs: '2rem', md: '3rem' },
+                }}
+              >
+                {t('jobOpportunities')}
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  opacity: 0.9,
+                  mb: 4,
+                  maxWidth: '600px',
+                }}
+              >
+                {t('jobOpportunitiesDescription')}
+              </Typography>
+            </Box>
+          </Fade>
+        </Container>
       </Box>
 
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                placeholder="Search jobs..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                fullWidth
-                placeholder="City"
-                value={filters.city}
-                onChange={(e) => handleFilterChange('city', e.target.value)}
-              />
-            </Grid>
-            
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Type</InputLabel>
-                <Select
-                  value={filters.type}
-                  label="Type"
-                  onChange={(e) => handleFilterChange('type', e.target.value)}
-                >
-                  <MenuItem value="">All Types</MenuItem>
-                  <MenuItem value="full-time">Full-time</MenuItem>
-                  <MenuItem value="part-time">Part-time</MenuItem>
-                  <MenuItem value="contract">Contract</MenuItem>
-                  <MenuItem value="temporary">Temporary</MenuItem>
-                  <MenuItem value="internship">Internship</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Experience</InputLabel>
-                <Select
-                  value={filters.experienceLevel}
-                  label="Experience"
-                  onChange={(e) => handleFilterChange('experienceLevel', e.target.value)}
-                >
-                  <MenuItem value="">All Levels</MenuItem>
-                  <MenuItem value="entry-level">Entry Level</MenuItem>
-                  <MenuItem value="mid-level">Mid Level</MenuItem>
-                  <MenuItem value="senior">Senior</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        {/* Search and Filters */}
+        <Fade in timeout={1000}>
+          <Card
+            sx={{
+              mb: 6,
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+              border: '1px solid rgba(0,0,0,0.05)',
+            }}
+          >
+            <CardContent sx={{ p: 4 }}>
+              <Grid container spacing={3} alignItems="center">
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    fullWidth
+                    placeholder="Search jobs..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2,
+                      },
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <TextField
+                    fullWidth
+                    placeholder="Location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LocationOn />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2,
+                      },
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={3}>
+                  <FormControl fullWidth>
+                    <InputLabel>Job Type</InputLabel>
+                    <Select
+                      value={jobType}
+                      onChange={(e) => setJobType(e.target.value)}
+                      label="Job Type"
+                      sx={{ borderRadius: 2 }}
+                    >
+                      <MenuItem value="">All Types</MenuItem>
+                      <MenuItem value="Full-time">Full-time</MenuItem>
+                      <MenuItem value="Part-time">Part-time</MenuItem>
+                      <MenuItem value="Contract">Contract</MenuItem>
+                      <MenuItem value="Internship">Internship</MenuItem>
+                      <MenuItem value="Volunteer">Volunteer</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                
+                <Grid item xs={12} sm={6} md={2}>
+                  <FormControl fullWidth>
+                    <InputLabel>Sort by</InputLabel>
+                    <Select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      label="Sort by"
+                      sx={{ borderRadius: 2 }}
+                    >
+                      <MenuItem value="date">Date Posted</MenuItem>
+                      <MenuItem value="title">Job Title</MenuItem>
+                      <MenuItem value="salary">Salary</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Fade>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
+        {/* Results Count */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+            {filteredJobs.length} Jobs Found
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredJobs.length)} of {filteredJobs.length} results
+          </Typography>
+        </Box>
 
-      {jobs.length === 0 && !loading ? (
-        <Card>
-          <CardContent sx={{ textAlign: 'center', py: 6 }}>
-            <Work sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-            <Typography variant="h6" gutterBottom>
-              No jobs found
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Try adjusting your search criteria or check back later for new opportunities.
-            </Typography>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          <Grid container spacing={3}>
-            {jobs.map((job) => (
-              <Grid item xs={12} md={6} key={job._id}>
+        {/* Jobs Grid */}
+        <Grid container spacing={4}>
+          {paginatedJobs.map((job, index) => (
+            <Grid item xs={12} md={6} lg={4} key={job._id}>
+              <Zoom in timeout={1200 + index * 100}>
                 <Card
                   sx={{
                     height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                    borderRadius: 3,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                    border: '1px solid rgba(0,0,0,0.05)',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
                     '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: 3,
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
                     },
                   }}
+                  onClick={() => navigate(`/jobs/${job._id}`)}
                 >
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Typography variant="h6" component="h3" sx={{ fontWeight: 600, flexGrow: 1 }}>
-                        {job.title}
-                      </Typography>
+                  <CardContent sx={{ p: 3 }}>
+                    {/* Header */}
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+                      <Avatar
+                        sx={{
+                          bgcolor: 'primary.main',
+                          width: 50,
+                          height: 50,
+                          mr: 2,
+                        }}
+                      >
+                        <Business />
+                      </Avatar>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 600,
+                            mb: 0.5,
+                            color: 'text.primary',
+                          }}
+                        >
+                          {job.title}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            mb: 1,
+                          }}
+                        >
+                          {job.company.name}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <LocationOn sx={{ fontSize: 16, color: 'text.secondary' }} />
+                          <Typography variant="body2" color="text.secondary">
+                            {job.location.address.city}, {job.location.address.state}
+                          </Typography>
+                        </Box>
+                      </Box>
                       <Chip
-                        label={job.employment.type.replace('-', ' ')}
+                        icon={getJobTypeIcon(job.type)}
+                        label={job.type}
+                        color={getJobTypeColor(job.type)}
                         size="small"
-                        color="primary"
-                        variant="outlined"
+                        sx={{ fontWeight: 600 }}
                       />
                     </Box>
 
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Business sx={{ fontSize: 16, color: 'text.secondary', mr: 1 }} />
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        {job.company.name}
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <LocationOn sx={{ fontSize: 16, color: 'text.secondary', mr: 1 }} />
-                      <Typography variant="body2">
-                        {job.location.address.city}, {job.location.address.state}
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <AttachMoney sx={{ fontSize: 16, color: 'text.secondary', mr: 1 }} />
-                      <Typography variant="body2">
-                        {formatSalary(job.compensation)}
-                      </Typography>
-                    </Box>
-
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {job.description.substring(0, 150)}...
+                    {/* Description */}
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                        mb: 3,
+                        lineHeight: 1.6,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {job.description}
                     </Typography>
 
-                    {job.requirements?.skills && job.requirements.skills.length > 0 && (
-                      <Box sx={{ mb: 2 }}>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                          {job.requirements.skills.slice(0, 3).map((skill, index) => (
+                    {/* Salary */}
+                    {job.salary && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <AttachMoney sx={{ fontSize: 16, color: 'success.main', mr: 0.5 }} />
+                        <Typography variant="body2" sx={{ color: 'success.main', fontWeight: 600 }}>
+                          {job.salary.min && job.salary.max 
+                            ? `$${job.salary.min.toLocaleString()} - $${job.salary.max.toLocaleString()}`
+                            : job.salary.min 
+                            ? `$${job.salary.min.toLocaleString()}+`
+                            : 'Salary not specified'
+                          }
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {/* Requirements */}
+                    {job.requirements && job.requirements.length > 0 && (
+                      <Box sx={{ mb: 3 }}>
+                        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                          Requirements:
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {job.requirements.slice(0, 3).map((req, reqIndex) => (
                             <Chip
-                              key={index}
-                              label={skill}
+                              key={reqIndex}
+                              label={req}
                               size="small"
                               variant="outlined"
+                              color="primary"
                             />
                           ))}
-                          {job.requirements.skills.length > 3 && (
+                          {job.requirements.length > 3 && (
                             <Chip
-                              label={`+${job.requirements.skills.length - 3} more`}
+                              label={`+${job.requirements.length - 3} more`}
                               size="small"
                               variant="outlined"
                             />
@@ -266,34 +471,57 @@ const JobsPage = () => {
                         </Box>
                       </Box>
                     )}
+
+                    {/* Posted Date */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <AccessTime sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
+                      <Typography variant="body2" color="text.secondary">
+                        Posted {new Date(job.createdAt).toLocaleDateString()}
+                      </Typography>
+                    </Box>
                   </CardContent>
 
-                  <CardActions sx={{ p: 2, pt: 0 }}>
+                  <CardActions sx={{ p: 3, pt: 0 }}>
                     <Button
                       variant="contained"
-                      onClick={() => navigate(`/jobs/${job._id}`)}
                       fullWidth
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/jobs/${job._id}`);
+                      }}
+                      sx={{
+                        borderRadius: 2,
+                        py: 1.5,
+                        fontWeight: 600,
+                      }}
                     >
                       View Details
                     </Button>
                   </CardActions>
                 </Card>
-              </Grid>
-            ))}
-          </Grid>
+              </Zoom>
+            </Grid>
+          ))}
+        </Grid>
 
-          {totalPages > 1 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={(e, value) => setPage(value)}
-                color="primary"
-              />
-            </Box>
-          )}
-        </>
-      )}
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              size="large"
+              sx={{
+                '& .MuiPaginationItem-root': {
+                  borderRadius: 2,
+                },
+              }}
+            />
+          </Box>
+        )}
+      </Container>
     </Box>
   );
 };

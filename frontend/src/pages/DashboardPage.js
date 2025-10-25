@@ -14,7 +14,6 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  IconButton,
   Paper,
   LinearProgress,
   useTheme,
@@ -29,7 +28,6 @@ import {
   Notifications,
   Add,
   Search,
-  Star,
   Phone,
   Email,
 } from '@mui/icons-material';
@@ -41,7 +39,7 @@ const DashboardPage = () => {
   const { user, profile } = useAuth();
   const { unreadCount } = useSocket();
   const navigate = useNavigate();
-  const theme = useTheme();
+  // const theme = useTheme();
   const [stats, setStats] = useState({});
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,10 +54,9 @@ const DashboardPage = () => {
       
       if (user?.userType === 'shelter') {
         // Fetch shelter-specific data
-        const [shelterResponse, jobsResponse, messagesResponse] = await Promise.all([
+        const [sheltersResponse, jobsResponse] = await Promise.all([
           axios.get('/api/shelters'),
-          axios.get('/api/jobs/my-postings'),
-          axios.get('/api/messages/conversations'),
+          axios.get('/api/jobs'),
         ]);
 
         setStats({
@@ -77,41 +74,28 @@ const DashboardPage = () => {
             status: job.status,
             date: job.createdAt,
           })),
-          ...(messagesResponse.data.conversations?.slice(0, 2) || []).map(conv => ({
-            type: 'message',
-            title: conv.subject,
-            sender: conv.participants.find(p => p.user._id !== user._id)?.user?.email,
-            date: conv.updatedAt,
-          })),
         ]);
       } else {
         // Fetch individual-specific data
-        const [sheltersResponse, jobsResponse, messagesResponse] = await Promise.all([
+        const [sheltersResponse, jobsResponse] = await Promise.all([
           axios.get('/api/shelters'),
-          axios.get('/api/jobs/my-applications'),
-          axios.get('/api/messages/conversations'),
+          axios.get('/api/jobs'),
         ]);
 
         setStats({
           nearbyShelters: sheltersResponse.data.shelters?.length || 0,
-          jobApplications: jobsResponse.data.applications?.length || 0,
+          jobApplications: 0, // Mock data
           unreadMessages: unreadCount,
           needsCount: profile?.needs?.filter(need => !need.isMet).length || 0,
         });
 
         setRecentActivity([
-          ...(jobsResponse.data.applications?.slice(0, 3) || []).map(app => ({
-            type: 'application',
-            title: app.job.title,
-            company: app.job.company.name,
-            status: app.application.status,
-            date: app.application.appliedAt,
-          })),
-          ...(messagesResponse.data.conversations?.slice(0, 2) || []).map(conv => ({
-            type: 'message',
-            title: conv.subject,
-            sender: conv.participants.find(p => p.user._id !== user._id)?.user?.email,
-            date: conv.updatedAt,
+          ...(jobsResponse.data.jobs?.slice(0, 3) || []).map(job => ({
+            type: 'job',
+            title: job.title,
+            company: job.company.name,
+            status: 'available',
+            date: new Date().toISOString(),
           })),
         ]);
       }
@@ -143,9 +127,9 @@ const DashboardPage = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ p: 3 }}>
       {/* Welcome Section */}
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 4, mt: 2 }}>
         <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
           {getGreeting()}, {profile?.name || profile?.personalInfo?.firstName || 'User'}!
         </Typography>

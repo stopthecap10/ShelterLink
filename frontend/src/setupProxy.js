@@ -6,6 +6,9 @@ module.exports = function(app) {
     createProxyMiddleware({
       target: 'http://localhost:5001',
       changeOrigin: true,
+      secure: false,
+      timeout: 10000,
+      proxyTimeout: 10000,
     })
   );
 };
