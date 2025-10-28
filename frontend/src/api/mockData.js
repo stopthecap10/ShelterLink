@@ -53,14 +53,12 @@ export const mockShelters = [
       sunday: { open: '07:00', close: '20:00', closed: false }
     },
     rating: {
-      average: 4.3,
-      count: 127
+      average: 4.2,
+      count: 234
     },
     isActive: true,
     verificationStatus: 'verified',
-    images: [
-      { url: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400', caption: 'Main entrance', isPrimary: true }
-    ],
+    // Using professional icons instead of fake images
     specialPrograms: [
       'Hope Gardens Family Center for women and children',
       'URM Academy for job training and education',
@@ -125,14 +123,12 @@ export const mockShelters = [
       sunday: { open: '07:00', close: '20:00', closed: false }
     },
     rating: {
-      average: 4.1,
-      count: 89
+      average: 4.0,
+      count: 187
     },
     isActive: true,
     verificationStatus: 'verified',
-    images: [
-      { url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400', caption: 'Mission building', isPrimary: true }
-    ],
+    // Using professional icons instead of fake images
     specialPrograms: [
       'New Life Program - 12-month residential recovery program',
       'Work Experience Program - Job training and placement',
@@ -191,14 +187,12 @@ export const mockShelters = [
       sunday: { open: '09:00', close: '18:00', closed: false }
     },
     rating: {
-      average: 4.7,
-      count: 156
+      average: 4.5,
+      count: 312
     },
     isActive: true,
     verificationStatus: 'verified',
-    images: [
-      { url: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400', caption: 'Women\'s center entrance', isPrimary: true }
-    ]
+    // Using professional icons instead of fake images
   },
   {
     _id: '4',
@@ -245,14 +239,12 @@ export const mockShelters = [
       sunday: { open: '10:00', close: '20:00', closed: false }
     },
     rating: {
-      average: 4.5,
-      count: 94
+      average: 4.3,
+      count: 156
     },
     isActive: true,
     verificationStatus: 'verified',
-    images: [
-      { url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400', caption: 'Youth center', isPrimary: true }
-    ]
+    // Using professional icons instead of fake images
   },
   {
     _id: '5',
@@ -299,14 +291,12 @@ export const mockShelters = [
       sunday: { open: '09:00', close: '15:00', closed: false }
     },
     rating: {
-      average: 4.4,
-      count: 203
+      average: 4.1,
+      count: 278
     },
     isActive: true,
     verificationStatus: 'verified',
-    images: [
-      { url: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400', caption: 'Housing complex', isPrimary: true }
-    ]
+    // Using professional icons instead of fake images
   },
   {
     _id: '6',
@@ -352,14 +342,12 @@ export const mockShelters = [
       sunday: { open: '08:00', close: '20:00', closed: false }
     },
     rating: {
-      average: 4.2,
-      count: 145
+      average: 4.4,
+      count: 198
     },
     isActive: true,
     verificationStatus: 'verified',
-    images: [
-      { url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400', caption: 'Midnight Mission building', isPrimary: true }
-    ]
+    // Using professional icons instead of fake images
   },
   {
     _id: '7',
@@ -407,67 +395,11 @@ export const mockShelters = [
     },
     rating: {
       average: 4.6,
-      count: 78
+      count: 124
     },
     isActive: true,
     verificationStatus: 'verified',
-    images: [
-      { url: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400', caption: 'Family shelter entrance', isPrimary: true }
-    ]
-  },
-  {
-    _id: '8',
-    name: 'Los Angeles LGBT Center',
-    description: 'Providing comprehensive services to LGBTQ+ individuals experiencing homelessness. We offer emergency shelter, housing assistance, job training, and specialized support services for the LGBTQ+ community.',
-    address: {
-      street: '1625 N Schrader Blvd',
-      city: 'Los Angeles',
-      state: 'CA',
-      zipCode: '90028'
-    },
-    coordinates: {
-      lat: 34.1022,
-      lng: -118.3267
-    },
-    contact: {
-      phone: '(323) 993-7400',
-      email: 'info@lalgbtcenter.org',
-      website: 'https://lalgbtcenter.org'
-    },
-    capacity: {
-      totalBeds: 40,
-      availableBeds: 5
-    },
-    services: [
-      { name: 'LGBTQ+ Shelter', available: true, description: 'Safe space for LGBTQ+ individuals' },
-      { name: 'Housing Assistance', available: true, description: 'Housing placement services' },
-      { name: 'Job Training', available: true, description: 'Skills development programs' },
-      { name: 'Mental Health', available: true, description: 'LGBTQ+ affirming counseling' },
-      { name: 'Medical Care', available: true, description: 'LGBTQ+ health services' }
-    ],
-    requirements: [
-      { type: 'LGBTQ+ Community', description: 'Services for LGBTQ+ individuals', mandatory: true },
-      { type: 'ID Required', description: 'Valid government ID', mandatory: true },
-      { type: 'Intake Assessment', description: 'Comprehensive intake process', mandatory: true }
-    ],
-    operatingHours: {
-      monday: { open: '09:00', close: '21:00', closed: false },
-      tuesday: { open: '09:00', close: '21:00', closed: false },
-      wednesday: { open: '09:00', close: '21:00', closed: false },
-      thursday: { open: '09:00', close: '21:00', closed: false },
-      friday: { open: '09:00', close: '21:00', closed: false },
-      saturday: { open: '10:00', close: '20:00', closed: false },
-      sunday: { open: '10:00', close: '20:00', closed: false }
-    },
-    rating: {
-      average: 4.8,
-      count: 112
-    },
-    isActive: true,
-    verificationStatus: 'verified',
-    images: [
-      { url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400', caption: 'LGBTQ+ center', isPrimary: true }
-    ]
+    // Using professional icons instead of fake images
   }
 ];
 
@@ -925,70 +857,6 @@ export const mockJobs = [
     },
     status: 'active',
     tags: ['childcare', 'education', 'non-profit', 'part-time', 'entry-level']
-  },
-  {
-    _id: '6',
-    title: 'LGBTQ+ Support Specialist - LA LGBT Center',
-    description: 'Provide specialized support services to LGBTQ+ individuals experiencing homelessness. Help with housing placement, job training, and community resources. Must be LGBTQ+ affirming and culturally competent.',
-    company: {
-      name: 'Los Angeles LGBT Center',
-      website: 'https://lalgbtcenter.org',
-      description: 'Providing comprehensive services to LGBTQ+ individuals'
-    },
-    location: {
-      address: {
-        street: '1625 N Schrader Blvd',
-        city: 'Los Angeles',
-        state: 'CA',
-        zipCode: '90028'
-      },
-      isRemote: false
-    },
-    employment: {
-      type: 'full-time',
-      schedule: 'Monday-Friday, 9:00 AM - 5:00 PM',
-      startDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) // 10 days from now
-    },
-    compensation: {
-      type: 'salary',
-      amount: { min: 45000, max: 55000 },
-      currency: 'USD'
-    },
-    requirements: {
-      experience: {
-        level: 'mid-level',
-        years: 2,
-        description: '2+ years experience working with LGBTQ+ community'
-      },
-      education: {
-        level: 'bachelors',
-        field: 'Social Work, Psychology, or related field',
-        required: true
-      },
-      skills: ['LGBTQ+ Cultural Competency', 'Case Management', 'Crisis Intervention', 'Community Resources'],
-      other: ['LGBTQ+ affirming required', 'Background check required', 'Valid driver\'s license']
-    },
-    application: {
-      process: 'email',
-      instructions: 'Send resume and cover letter to careers@lalgbtcenter.org',
-      contactInfo: {
-        name: 'Michael Davis',
-        email: 'careers@lalgbtcenter.org',
-        phone: '(323) 993-7400'
-      },
-      deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000) // 3 weeks from now
-    },
-    support: {
-      training: {
-        provided: true,
-        description: 'LGBTQ+ cultural competency and case management training',
-        duration: '2 weeks'
-      },
-      mentorship: true,
-      resources: ['Professional development', 'Health insurance', 'Retirement plan', 'LGBTQ+ affirming environment']
-    },
-    status: 'active',
-    tags: ['lgbtq', 'support-services', 'social-work', 'full-time', 'professional']
   },
   {
     _id: '7',

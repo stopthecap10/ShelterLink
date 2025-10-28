@@ -184,7 +184,7 @@ const RegisterPage = () => {
               <PersonAddIcon sx={{ fontSize: 30 }} />
             </Box>
             <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
-              Join Shelter Match
+              Join Shelter Link
             </Typography>
             <Typography variant="body1" color="text.secondary">
               Create your account to get started

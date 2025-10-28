@@ -48,6 +48,13 @@ const LanguageOptions = () => {
       description: 'Langue française',
       color: '#f093fb'
     },
+    { 
+      code: 'zh', 
+      name: '中文', 
+      flag: '🇨🇳',
+      description: '中文语言',
+      color: '#ff6b6b'
+    }
   ];
 
   const handleLanguageChange = (newLanguage) => {

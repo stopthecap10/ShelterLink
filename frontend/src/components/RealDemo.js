@@ -558,10 +558,10 @@ const RealDemo = () => {
                         value={userProfile.employmentStatus}
                         onChange={(e) => setUserProfile({...userProfile, employmentStatus: e.target.value})}
                       >
-                        <MenuItem value="employed">Employed</MenuItem>
-                        <MenuItem value="unemployed">Unemployed</MenuItem>
-                        <MenuItem value="part_time">Part-time</MenuItem>
-                        <MenuItem value="student">Student</MenuItem>
+                        <MenuItem value="employed">{t('employed')}</MenuItem>
+                        <MenuItem value="unemployed">{t('unemployed')}</MenuItem>
+                        <MenuItem value="part_time">{t('partTime')}</MenuItem>
+                        <MenuItem value="student">{t('student')}</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
@@ -572,10 +572,10 @@ const RealDemo = () => {
                         value={userProfile.urgency}
                         onChange={(e) => setUserProfile({...userProfile, urgency: e.target.value})}
                       >
-                        <MenuItem value="immediate">Immediate (within 24 hours)</MenuItem>
-                        <MenuItem value="urgent">Urgent (within 3 days)</MenuItem>
-                        <MenuItem value="soon">Soon (within a week)</MenuItem>
-                        <MenuItem value="planning">Planning ahead</MenuItem>
+                        <MenuItem value="immediate">{t('immediate')}</MenuItem>
+                        <MenuItem value="urgent">{t('urgent')}</MenuItem>
+                        <MenuItem value="soon">{t('soon')}</MenuItem>
+                        <MenuItem value="planning">{t('planning')}</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
@@ -829,7 +829,7 @@ const RealDemo = () => {
                 },
               }}
             >
-              {isPlaying ? 'Pause Demo' : 'Start Demo'}
+              {isPlaying ? t('pauseDemo') : t('startDemo')}
             </Button>
             
             <Button

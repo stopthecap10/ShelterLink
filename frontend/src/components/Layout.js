@@ -80,13 +80,14 @@ const Layout = ({ children }) => {
   const navigationItems = [
     { icon: <Home />, text: t('home'), path: '/' },
     { icon: <Dashboard />, text: t('dashboard'), path: '/dashboard' },
-    { icon: <Business />, text: t('shelters'), path: '/shelters' },
-    { icon: <Work />, text: t('jobs'), path: '/jobs' },
+    { icon: <Business />, text: t('findShelters'), path: '/shelters' },
+    { icon: <Work />, text: t('findJobs'), path: '/jobs' },
     { icon: <Message />, text: t('messages'), path: '/messages' },
     { icon: <Person />, text: t('profile'), path: '/profile' },
-    { icon: <TrendingUp />, text: t('impact'), path: '/impact' },
+    { icon: <TrendingUp />, text: t('impact.title'), path: '/impact' },
     { icon: <PlayArrow />, text: t('demo'), path: '/demo' },
     { icon: <Translate />, text: t('languages'), path: '/languages' },
+    { icon: <Business />, text: 'Shelter Staff', path: '/shelter-staff-login' },
   ];
 
   const isActivePath = (path) => {
@@ -111,7 +112,7 @@ const Layout = ({ children }) => {
       >
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
-            Shelter Match
+            Shelter Link
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.9 }}>
             {user ? `Welcome, ${user.email}` : 'Guest User'}
@@ -255,7 +256,7 @@ const Layout = ({ children }) => {
                     lineHeight: 1,
                   }}
                 >
-                  Shelter Match
+                  Shelter Link
                 </Typography>
                 <Typography
                   variant="caption"

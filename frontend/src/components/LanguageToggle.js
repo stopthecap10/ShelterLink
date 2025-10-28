@@ -42,6 +42,7 @@ const LanguageToggle = () => {
     { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'es', name: 'Español', flag: '🇪🇸' },
     { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'zh', name: '中文', flag: '🇨🇳' }
   ];
 
   const currentLanguage = languages.find(lang => lang.code === language);
@@ -145,6 +146,7 @@ const LanguageToggle = () => {
                   {lang.code === 'en' && 'English'}
                   {lang.code === 'es' && 'Spanish'}
                   {lang.code === 'fr' && 'French'}
+                  {lang.code === 'zh' && 'Chinese'}
                 </Typography>
               </Box>
               {lang.code === language && (

@@ -5,6 +5,7 @@ import { CssBaseline } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
 import { SocketProvider } from './contexts/SocketContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ShelterDataProvider } from './contexts/ShelterDataContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 
@@ -24,6 +25,8 @@ import ImpactDashboard from './components/ImpactDashboard';
 import MobileOptimization from './components/MobileOptimization';
 import PerformanceOptimization from './components/PerformanceOptimization';
 import RealDemo from './components/RealDemo';
+import ShelterStaffLogin from './pages/ShelterStaffLogin';
+import ShelterStaffDashboard from './pages/ShelterStaffDashboard';
 import LanguageOptions from './components/LanguageOptions';
 
 // Create Material-UI theme
@@ -92,7 +95,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <LanguageProvider>
-        <AuthProvider>
+        <ShelterDataProvider>
+          <AuthProvider>
           <SocketProvider>
             <Router>
               <div className="App">
@@ -105,6 +109,8 @@ function App() {
                 <Route path="/shelters/:id" element={<ShelterDetailPage />} />
                 <Route path="/jobs" element={<JobsPage />} />
                 <Route path="/jobs/:id" element={<JobDetailPage />} />
+                <Route path="/shelter-staff-login" element={<ShelterStaffLogin />} />
+                <Route path="/shelter-staff-dashboard" element={<ShelterStaffDashboard />} />
 
                 {/* Protected routes */}
                 <Route
@@ -196,6 +202,7 @@ function App() {
             </Router>
           </SocketProvider>
         </AuthProvider>
+        </ShelterDataProvider>
       </LanguageProvider>
     </ThemeProvider>
   );

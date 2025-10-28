@@ -48,6 +48,7 @@ import {
 } from '@mui/icons-material';
 import { useLanguage } from '../contexts/LanguageContext';
 import { mockJobService } from '../api/mockData';
+import LanguageToggle from '../components/LanguageToggle';
 
 const JobsPage = () => {
   const navigate = useNavigate();
@@ -182,38 +183,43 @@ const JobsPage = () => {
           <Fade in timeout={800}>
             <Box>
               {/* Navigation */}
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-                <Button
-                  startIcon={<ArrowBack />}
-                  onClick={() => navigate('/')}
-                  sx={{ 
-                    mr: 2, 
-                    color: 'white',
-                    borderColor: 'rgba(255,255,255,0.3)',
-                    '&:hover': {
-                      borderColor: 'white',
-                      bgcolor: 'rgba(255,255,255,0.1)',
-                    }
-                  }}
-                  variant="outlined"
-                >
-                  Back to Home
-                </Button>
-                <Button
-                  startIcon={<Home />}
-                  onClick={() => navigate('/')}
-                  sx={{ 
-                    color: 'white',
-                    borderColor: 'rgba(255,255,255,0.3)',
-                    '&:hover': {
-                      borderColor: 'white',
-                      bgcolor: 'rgba(255,255,255,0.1)',
-                    }
-                  }}
-                  variant="outlined"
-                >
-                  Home
-                </Button>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Button
+                    startIcon={<ArrowBack />}
+                    onClick={() => navigate('/')}
+                    sx={{ 
+                      mr: 2, 
+                      color: 'white',
+                      borderColor: 'rgba(255,255,255,0.3)',
+                      '&:hover': {
+                        borderColor: 'white',
+                        bgcolor: 'rgba(255,255,255,0.1)',
+                      }
+                    }}
+                    variant="outlined"
+                  >
+                    Back to Home
+                  </Button>
+                  <Button
+                    startIcon={<Home />}
+                    onClick={() => navigate('/')}
+                    sx={{ 
+                      color: 'white',
+                      borderColor: 'rgba(255,255,255,0.3)',
+                      '&:hover': {
+                        borderColor: 'white',
+                        bgcolor: 'rgba(255,255,255,0.1)',
+                      }
+                    }}
+                    variant="outlined"
+                  >
+                    Home
+                  </Button>
+                </Box>
+                
+                {/* Language Toggle */}
+                <LanguageToggle />
               </Box>
 
               <Typography
@@ -224,7 +230,7 @@ const JobsPage = () => {
                   fontSize: { xs: '2rem', md: '3rem' },
                 }}
               >
-                {t('jobOpportunities')}
+                {t('findJobs')}
               </Typography>
               <Typography
                 variant="h6"
@@ -317,14 +323,14 @@ const JobsPage = () => {
                 
                 <Grid item xs={12} sm={6} md={2}>
                   <FormControl fullWidth>
-                    <InputLabel>Sort by</InputLabel>
+                    <InputLabel>{t('sortBy')}</InputLabel>
                     <Select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      label="Sort by"
+                      label={t('sortBy')}
                       sx={{ borderRadius: 2 }}
                     >
-                      <MenuItem value="date">Date Posted</MenuItem>
+                      <MenuItem value="date">{t('datePosted')}</MenuItem>
                       <MenuItem value="title">Job Title</MenuItem>
                       <MenuItem value="salary">Salary</MenuItem>
                     </Select>
@@ -341,7 +347,7 @@ const JobsPage = () => {
             {filteredJobs.length} Jobs Found
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredJobs.length)} of {filteredJobs.length} results
+            {t('showingResults')} {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredJobs.length)} {t('ofResults')} {filteredJobs.length} {t('results')}
           </Typography>
         </Box>
 
@@ -476,7 +482,7 @@ const JobsPage = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <AccessTime sx={{ fontSize: 16, color: 'text.secondary', mr: 0.5 }} />
                       <Typography variant="body2" color="text.secondary">
-                        Posted {new Date(job.createdAt).toLocaleDateString()}
+                        {t('posted')} {new Date(job.createdAt).toLocaleDateString()}
                       </Typography>
                     </Box>
                   </CardContent>
@@ -495,7 +501,7 @@ const JobsPage = () => {
                         fontWeight: 600,
                       }}
                     >
-                      View Details
+                      {t('viewDetails')}
                     </Button>
                   </CardActions>
                 </Card>

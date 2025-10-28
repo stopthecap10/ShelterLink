@@ -58,41 +58,105 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useShelterData } from '../contexts/ShelterDataContext';
 import { mockShelterService } from '../api/mockData';
-import ShelterMap from '../components/ShelterMap';
+import LanguageToggle from '../components/LanguageToggle';
 
 const SheltersPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { shelters } = useShelterData();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
-  const [shelters, setShelters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [location, setLocation] = useState('');
   const [sortBy, setSortBy] = useState('rating');
-  const [viewMode, setViewMode] = useState('list');
+  // Removed map view - using list view only
   const [availableOnly, setAvailableOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationError, setLocationError] = useState(null);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
 
   useEffect(() => {
-    fetchShelters();
+    // Data is now provided by ShelterDataContext
+    setLoading(false);
   }, []);
 
-  const fetchShelters = async () => {
-    try {
-      setLoading(true);
-      const response = await mockShelterService.getShelters();
-      setShelters(response.shelters || []);
-    } catch (err) {
-      setError('Failed to load shelters');
-      console.error('Error fetching shelters:', err);
-    } finally {
-      setLoading(false);
+  // Remove fetchShelters function since data comes from context
+
+  // Calculate distance between two coordinates using Haversine formula
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 3959; // Earth's radius in miles
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  // Get user's current location
+  const getUserLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by this browser.');
+      return;
+    }
+
+    setIsGettingLocation(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
+        setIsGettingLocation(false);
+        
+        // If "closest to me" is selected, trigger a re-sort
+        if (sortBy === 'closest') {
+          // Force re-render by updating sortBy
+          setSortBy('closest');
+        }
+      },
+      (error) => {
+        setIsGettingLocation(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError('Location access denied. Please enable location permissions.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError('Location information unavailable.');
+            break;
+          case error.TIMEOUT:
+            setLocationError('Location request timed out.');
+            break;
+          default:
+            setLocationError('An unknown error occurred while retrieving location.');
+            break;
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000 // 5 minutes
+      }
+    );
+  };
+
+  // Handle sort change
+  const handleSortChange = (newSortBy) => {
+    setSortBy(newSortBy);
+    
+    // If "closest to me" is selected and we don't have location yet, get it
+    if (newSortBy === 'closest' && !userLocation) {
+      getUserLocation();
     }
   };
 
@@ -124,6 +188,42 @@ const SheltersPage = () => {
     return colorMap[serviceName] || 'default';
   };
 
+  const translateServiceName = (serviceName) => {
+    const serviceMap = {
+      'Emergency Shelter': t('emergencyShelter'),
+      'Meals': t('meals'),
+      'Medical Care': t('medicalCare'),
+      'Job Training': t('jobTraining'),
+      'Counseling': t('counseling'),
+      'Case Management': t('caseManagement'),
+      'Childcare': t('childcare'),
+      'Transportation': t('transportation'),
+      'LGBTQ+ Shelter': t('lgbtqShelter'),
+      'Housing Assistance': t('housingAssistance'),
+      'Mental Health': t('mentalHealth'),
+      'Women\'s Shelter': t('womensShelter'),
+      'Permanent Housing': t('permanentHousing'),
+      'Family Shelter': t('familyShelter'),
+      'Youth Shelter': t('youthShelter'),
+      'Education Support': t('educationSupport'),
+    };
+    return serviceMap[serviceName] || serviceName;
+  };
+
+  const translateShelterDescription = (shelterName) => {
+    const descriptionMap = {
+      'Union Rescue Mission': t('unionRescueMissionDescription'),
+      'Los Angeles Mission': t('laMissionDescription'),
+      'Downtown Women\'s Center': t('downtownWomensCenterDescription'),
+      'Covenant House California': t('covenantHouseDescription'),
+      'Skid Row Housing Trust': t('skidRowHousingTrustDescription'),
+      'Midnight Mission': t('midnightMissionDescription'),
+      'Haven House': t('havenHouseDescription'),
+      'Los Angeles LGBT Center': t('laLgbtCenterDescription'),
+    };
+    return descriptionMap[shelterName] || shelterName;
+  };
+
   const filteredShelters = shelters.filter(shelter => {
     const matchesSearch = shelter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          shelter.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -142,14 +242,30 @@ const SheltersPage = () => {
         return a.name.localeCompare(b.name);
       case 'availability':
         return (b.capacity?.availableBeds || 0) - (a.capacity?.availableBeds || 0);
+      case 'closest':
+        if (!userLocation || !a.coordinates || !b.coordinates) {
+          return 0; // If no location data, maintain original order
+        }
+        const distanceA = calculateDistance(
+          userLocation.lat, 
+          userLocation.lng, 
+          a.coordinates.lat, 
+          a.coordinates.lng
+        );
+        const distanceB = calculateDistance(
+          userLocation.lat, 
+          userLocation.lng, 
+          b.coordinates.lat, 
+          b.coordinates.lng
+        );
+        return distanceA - distanceB;
       default:
         return 0;
     }
   });
 
-  const totalPages = Math.ceil(sortedShelters.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedShelters = sortedShelters.slice(startIndex, startIndex + itemsPerPage);
+  // Show all shelters on one page (no pagination)
+  const paginatedShelters = sortedShelters;
 
   const handleGetDirections = (shelter) => {
     const address = `${shelter.address.street}, ${shelter.address.city}, ${shelter.address.state} ${shelter.address.zipCode}`;
@@ -258,7 +374,7 @@ const SheltersPage = () => {
             }}
           >
             {/* Navigation */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
               <Button
                 startIcon={<ArrowBack />}
                 onClick={() => navigate('/')}
@@ -278,6 +394,9 @@ const SheltersPage = () => {
               >
                 Back to Home
               </Button>
+              
+              {/* Language Toggle */}
+              <LanguageToggle />
             </Box>
 
             {/* Page Title */}
@@ -293,7 +412,7 @@ const SheltersPage = () => {
                 mb: 3
               }}
             >
-              {t('shelters')}
+                {t('findShelters')}
             </Typography>
 
             {/* Search and Filters */}
@@ -328,7 +447,7 @@ const SheltersPage = () => {
               <Grid item xs={12} md={3}>
                 <TextField
                   fullWidth
-                  placeholder="City"
+                  placeholder={t('city')}
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   InputProps={{
@@ -354,10 +473,10 @@ const SheltersPage = () => {
               </Grid>
               <Grid item xs={12} md={3}>
                 <FormControl fullWidth>
-                  <InputLabel>Sort by</InputLabel>
+                  <InputLabel>{t('sortBy')}</InputLabel>
                   <Select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
+                    onChange={(e) => handleSortChange(e.target.value)}
                     sx={{
                       borderRadius: 3,
                       '&:hover .MuiOutlinedInput-notchedOutline': {
@@ -369,158 +488,118 @@ const SheltersPage = () => {
                       },
                     }}
                   >
-                    <MenuItem value="rating">Rating</MenuItem>
+                    <MenuItem value="rating">{t('rating')}</MenuItem>
                     <MenuItem value="name">Name</MenuItem>
                     <MenuItem value="availability">Availability</MenuItem>
+                    <MenuItem value="closest">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <LocationOn sx={{ fontSize: 16 }} />
+                        Closest to Me
+                        {isGettingLocation && <CircularProgress size={16} />}
+                      </Box>
+                    </MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} md={2}>
-                <Stack direction="row" spacing={1}>
-                  <Button
-                    variant={viewMode === 'list' ? 'contained' : 'outlined'}
-                    onClick={() => setViewMode('list')}
-                    startIcon={<ViewList />}
-                    sx={{
-                      borderRadius: 3,
-                      px: 2,
-                      py: 1,
-                      fontWeight: 700,
-                      ...(viewMode === 'list' ? {
-                        background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 8px 25px rgba(0,0,0,0.2)',
-                        },
-                      } : {
-                        borderColor: '#667eea',
-                        color: '#667eea',
-                        '&:hover': {
-                          borderColor: '#764ba2',
-                          backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        },
-                      }),
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    List
-                  </Button>
-                  <Button
-                    variant={viewMode === 'map' ? 'contained' : 'outlined'}
-                    onClick={() => setViewMode('map')}
-                    startIcon={<MapIcon />}
-                    sx={{
-                      borderRadius: 3,
-                      px: 2,
-                      py: 1,
-                      fontWeight: 700,
-                      ...(viewMode === 'map' ? {
-                        background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 8px 25px rgba(0,0,0,0.2)',
-                        },
-                      } : {
-                        borderColor: '#667eea',
-                        color: '#667eea',
-                        '&:hover': {
-                          borderColor: '#764ba2',
-                          backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        },
-                      }),
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    Map
-                  </Button>
-                </Stack>
-              </Grid>
+              {/* Map view removed - using list view only */}
             </Grid>
 
             {/* Results Summary */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                {filteredShelters.length} Shelters Found
+{t('sheltersFound').replace('{{count}}', filteredShelters.length)}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Chip
-                  label="Available Beds"
+                  label={t('availableBeds')}
                   color="success"
                   size="small"
                   sx={{ fontWeight: 600 }}
                 />
                 <Chip
-                  label="At Capacity"
+                  label={t('atCapacity')}
                   color="error"
                   size="small"
                   sx={{ fontWeight: 600 }}
                 />
               </Box>
             </Box>
+
+            {/* Location Status */}
+            {sortBy === 'closest' && (
+              <Box sx={{ mb: 3 }}>
+                {locationError && (
+                  <Alert 
+                    severity="warning" 
+                    sx={{ 
+                      mb: 2,
+                      borderRadius: 3,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}
+                    action={
+                      <Button 
+                        color="inherit" 
+                        size="small" 
+                        onClick={getUserLocation}
+                        disabled={isGettingLocation}
+                      >
+                        {isGettingLocation ? 'Getting...' : 'Retry'}
+                      </Button>
+                    }
+                  >
+                    {locationError}
+                  </Alert>
+                )}
+                
+                {userLocation && (
+                  <Alert 
+                    severity="success" 
+                    sx={{ 
+                      borderRadius: 3,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <LocationOn sx={{ fontSize: 20 }} />
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        Location found! Showing shelters closest to you.
+                      </Typography>
+                    </Box>
+                  </Alert>
+                )}
+                
+                {!userLocation && !locationError && !isGettingLocation && (
+                  <Alert 
+                    severity="info" 
+                    sx={{ 
+                      borderRadius: 3,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}
+                    action={
+                      <Button 
+                        color="inherit" 
+                        size="small" 
+                        onClick={getUserLocation}
+                        startIcon={<LocationOn />}
+                      >
+                        Get My Location
+                      </Button>
+                    }
+                  >
+                    <Typography variant="body2">
+                      Enable location access to see shelters closest to you.
+                    </Typography>
+                  </Alert>
+                )}
+              </Box>
+            )}
           </Paper>
         </Fade>
 
-        {/* Map View */}
-        {viewMode === 'map' && (
-          <Slide in timeout={1000} direction="up">
-            <Paper
-              elevation={8}
-              sx={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: 4,
-                p: 3,
-                mb: 3,
-                boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                minHeight: '500px',
-              }}
-            >
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  fontWeight: 700,
-                  background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  mb: 3
-                }}
-              >
-                Interactive Map View
-              </Typography>
-              
-              {/* Real Interactive Map */}
-              <ShelterMap 
-                shelters={paginatedShelters}
-                onShelterClick={(shelter) => navigate(`/shelters/${shelter._id}`)}
-              />
+        {/* Map view removed - using list view only */}
 
-              {/* Map Instructions */}
-              <Box sx={{ mt: 3, p: 2, background: 'rgba(102, 126, 234, 0.1)', borderRadius: 3 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                  Map Features:
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  • Green markers indicate shelters with available beds
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  • Red markers indicate shelters at capacity
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  • Click on any marker to view shelter details
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  • Use the list view to see detailed information
-                </Typography>
-              </Box>
-            </Paper>
-          </Slide>
-        )}
-
-        {/* List View */}
-        {viewMode === 'list' && (
-          <Grid container spacing={3}>
+        {/* Shelter List */}
+        <Grid container spacing={3}>
             {paginatedShelters.map((shelter, index) => (
               <Grid item xs={12} md={6} key={shelter._id}>
                 <Slide in timeout={1000 + index * 200} direction="up">
@@ -587,13 +666,28 @@ const SheltersPage = () => {
                             sx={{ mr: 1 }}
                           />
                           <Typography variant="body2" color="text.secondary">
-                            {shelter.rating?.average || 0} ({shelter.rating?.count || 0} reviews)
+                            {shelter.rating?.average || 0} ({shelter.rating?.count || 0} {t('reviews')})
                           </Typography>
                         </Box>
+
+                        {/* Distance Display */}
+                        {sortBy === 'closest' && userLocation && shelter.coordinates && (
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                            <LocationOn sx={{ color: '#4CAF50', mr: 1, fontSize: 16 }} />
+                            <Typography variant="body2" sx={{ color: '#4CAF50', fontWeight: 600 }}>
+                              {calculateDistance(
+                                userLocation.lat, 
+                                userLocation.lng, 
+                                shelter.coordinates.lat, 
+                                shelter.coordinates.lng
+                              ).toFixed(1)} miles away
+                            </Typography>
+                          </Box>
+                        )}
                       </Box>
 
                       <Chip
-                        label={`${shelter.capacity?.availableBeds || 0} beds`}
+                        label={`${shelter.capacity?.availableBeds || 0} ${t('beds')}`}
                         color={shelter.capacity?.availableBeds > 0 ? 'success' : 'error'}
                         sx={{ 
                           fontWeight: 600,
@@ -617,7 +711,7 @@ const SheltersPage = () => {
                         lineHeight: 1.5,
                       }}
                     >
-                      {shelter.description}
+                      {translateShelterDescription(shelter.name)}
                     </Typography>
 
                     {/* Services */}
@@ -630,7 +724,7 @@ const SheltersPage = () => {
                           <Chip
                             key={serviceIndex}
                             icon={getServiceIcon(service.name)}
-                            label={service.name}
+                            label={translateServiceName(service.name)}
                             size="small"
                             color={getServiceColor(service.name)}
                             variant="outlined"
@@ -677,7 +771,7 @@ const SheltersPage = () => {
                           transition: 'all 0.3s ease',
                         }}
                       >
-                        Directions
+                        {t('directions')}
                       </Button>
                       <Button
                         variant="contained"
@@ -698,7 +792,7 @@ const SheltersPage = () => {
                           transition: 'all 0.3s ease',
                         }}
                       >
-                        Call
+                        {t('call')}
                       </Button>
                       <Button
                         variant="contained"
@@ -719,7 +813,7 @@ const SheltersPage = () => {
                           transition: 'all 0.3s ease',
                         }}
                       >
-                        Email
+                        {t('email')}
                       </Button>
                       <Button
                         variant="outlined"
@@ -741,7 +835,7 @@ const SheltersPage = () => {
                           transition: 'all 0.3s ease',
                         }}
                       >
-                        View Details
+                        {t('viewDetails')}
                       </Button>
                     </Box>
                   </CardContent>
@@ -750,31 +844,7 @@ const SheltersPage = () => {
             </Grid>
           ))}
           </Grid>
-        )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <Fade in timeout={2000}>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={(event, value) => setCurrentPage(value)}
-                color="primary"
-                sx={{
-                  '& .MuiPaginationItem-root': {
-                    borderRadius: 3,
-                    fontWeight: 600,
-                    '&.Mui-selected': {
-                      background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                      color: 'white',
-                    },
-                  },
-                }}
-              />
-            </Box>
-          </Fade>
-        )}
       </Container>
     </Box>
   );

@@ -223,7 +223,7 @@ const HomePage = () => {
                   }}
                   startIcon={<LocationOn />}
                 >
-                  {t('shelters')}
+                  {t('findShelters')}
                 </Button>
                 <Button
                   variant="outlined"
@@ -247,7 +247,30 @@ const HomePage = () => {
                   }}
                   startIcon={<Work />}
                 >
-                  {t('jobs')}
+                  {t('findJobs')}
+                </Button>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => navigate('/shelter-staff-login')}
+                  sx={{
+                    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+                    color: 'white',
+                    px: 4,
+                    py: 1.5,
+                    fontSize: '1.1rem',
+                    fontWeight: 600,
+                    borderRadius: 3,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                  startIcon={<Business />}
+                >
+                  {t('shelterStaffLogin')}
                 </Button>
               </Stack>
             </Box>
@@ -534,7 +557,7 @@ const HomePage = () => {
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
-                Shelter Match
+                Shelter Link
               </Typography>
               <Typography variant="body2" sx={{ mb: 3, opacity: 0.8 }}>
                 {t('footerDescription')}

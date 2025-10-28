@@ -58,8 +58,10 @@ import {
   Info,
   Close,
 } from '@mui/icons-material';
+import LanguageToggle from '../components/LanguageToggle';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useShelterData } from '../contexts/ShelterDataContext';
 import { mockShelterService, mockRatingService } from '../api/mockData';
 
 const ShelterDetailPage = () => {
@@ -67,6 +69,7 @@ const ShelterDetailPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { getShelterById } = useShelterData();
   
   const [shelter, setShelter] = useState(null);
   const [ratings, setRatings] = useState([]);
@@ -110,10 +113,15 @@ const ShelterDetailPage = () => {
       setLoading(true);
       setError(null);
       
-      const [shelterData, ratingsData] = await Promise.all([
-        mockShelterService.getShelter(id),
-        mockRatingService.getShelterRatings(id),
-      ]);
+      // First try to get shelter from shared context (updated by staff)
+      let shelterData = getShelterById(id);
+      
+      // If not found in context, fallback to mock service
+      if (!shelterData) {
+        shelterData = await mockShelterService.getShelter(id);
+      }
+      
+      const ratingsData = await mockRatingService.getShelterRatings(id);
 
       setShelter(shelterData);
       setRatings(ratingsData.ratings);
@@ -165,7 +173,7 @@ const ShelterDetailPage = () => {
   const handleShare = () => {
     const shareData = {
       title: `Shelter: ${shelter.name}`,
-      text: `Check out ${shelter.name} - ${shelter.description}`,
+      text: `Check out ${shelter.name} - ${translateShelterDescription(shelter.name)}`,
       url: window.location.href
     };
 
@@ -221,7 +229,7 @@ const ShelterDetailPage = () => {
     if (!shelter.operatingHours) return [];
     
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const dayNames = [t('monday'), t('tuesday'), t('wednesday'), t('thursday'), t('friday'), t('saturday'), t('sunday')];
     
     return days.map((day, index) => {
       const dayHours = shelter.operatingHours[day];
@@ -230,6 +238,58 @@ const ShelterDetailPage = () => {
       }
       return `${dayNames[index]}: ${dayHours.open} - ${dayHours.close}`;
     });
+  };
+
+  const translateRequirementType = (requirementType) => {
+    const requirementMap = {
+      'LGBTQ+ Community': t('lgbtqCommunity'),
+      'ID Required': t('idRequired'),
+      'Intake Assessment': t('intakeAssessment'),
+      'Background Check': t('backgroundCheck'),
+      'Drug Test': t('drugTest'),
+      'Women Only': t('womenOnly'),
+      'Family Only': t('familyOnly'),
+      'Age Requirement': t('ageRequirement'),
+      'Housing First': t('housingFirst'),
+      'Case Management': t('caseManagement'),
+    };
+    return requirementMap[requirementType] || requirementType;
+  };
+
+  const translateServiceName = (serviceName) => {
+    const serviceMap = {
+      'Emergency Shelter': t('emergencyShelter'),
+      'Meals': t('meals'),
+      'Medical Care': t('medicalCare'),
+      'Job Training': t('jobTraining'),
+      'Counseling': t('counseling'),
+      'Case Management': t('caseManagement'),
+      'Childcare': t('childcare'),
+      'Transportation': t('transportation'),
+      'LGBTQ+ Shelter': t('lgbtqShelter'),
+      'Housing Assistance': t('housingAssistance'),
+      'Mental Health': t('mentalHealth'),
+      'Women\'s Shelter': t('womensShelter'),
+      'Permanent Housing': t('permanentHousing'),
+      'Family Shelter': t('familyShelter'),
+      'Youth Shelter': t('youthShelter'),
+      'Education Support': t('educationSupport'),
+    };
+    return serviceMap[serviceName] || serviceName;
+  };
+
+  const translateShelterDescription = (shelterName) => {
+    const descriptionMap = {
+      'Union Rescue Mission': t('unionRescueMissionDescription'),
+      'Los Angeles Mission': t('laMissionDescription'),
+      'Downtown Women\'s Center': t('downtownWomensCenterDescription'),
+      'Covenant House California': t('covenantHouseDescription'),
+      'Skid Row Housing Trust': t('skidRowHousingTrustDescription'),
+      'Midnight Mission': t('midnightMissionDescription'),
+      'Haven House': t('havenHouseDescription'),
+      'Los Angeles LGBT Center': t('laLgbtCenterDescription'),
+    };
+    return descriptionMap[shelterName] || shelterName;
   };
 
   if (loading) {
@@ -360,7 +420,7 @@ const ShelterDetailPage = () => {
             }}
           >
             {/* Navigation */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
               <Button
                 startIcon={<ArrowBack />}
                 onClick={() => navigate('/shelters')}
@@ -378,8 +438,11 @@ const ShelterDetailPage = () => {
                   transition: 'all 0.3s ease',
                 }}
               >
-                Back to Shelters
+                {t('shelterDetails.backToShelters')}
               </Button>
+              
+              {/* Language Toggle */}
+              <LanguageToggle />
             </Box>
 
             {/* Shelter Header */}
@@ -425,7 +488,7 @@ const ShelterDetailPage = () => {
                     sx={{ mr: 2 }}
                   />
                   <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                    {shelter.rating?.average || 0} ({shelter.rating?.count || 0} reviews)
+                    {shelter.rating?.average || 0} ({shelter.rating?.count || 0} {t('reviews')})
                   </Typography>
                 </Box>
 
@@ -437,7 +500,7 @@ const ShelterDetailPage = () => {
                     maxWidth: '80%'
                   }}
                 >
-                  {shelter.description}
+                  {translateShelterDescription(shelter.name)}
                 </Typography>
               </Box>
 
@@ -459,7 +522,7 @@ const ShelterDetailPage = () => {
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  Share
+                  {t('share')}
                 </Button>
                 <Button 
                   variant="outlined"
@@ -480,7 +543,7 @@ const ShelterDetailPage = () => {
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  Save
+                  {t('save')}
                 </Button>
               </Box>
             </Box>
@@ -516,7 +579,7 @@ const ShelterDetailPage = () => {
                     mb: 3
                   }}
                 >
-                  Contact Information
+                  {t('shelterDetails.contactInformation')}
                 </Typography>
                 <Grid container spacing={3}>
                   <Grid item xs={12} sm={6}>
@@ -659,14 +722,14 @@ const ShelterDetailPage = () => {
                       mb: 3
                     }}
                   >
-                    Services Provided
+                    {t('shelterDetails.servicesProvided')}
                   </Typography>
                   <Grid container spacing={2}>
                     {shelter.services.map((service, index) => (
                       <Grid item key={index}>
                         <Chip
                           icon={getServiceIcon(service.name)}
-                          label={service.name}
+                          label={translateServiceName(service.name)}
                           color={getServiceColor(service.name)}
                           variant="filled"
                           sx={{
@@ -717,7 +780,7 @@ const ShelterDetailPage = () => {
                       mb: 3
                     }}
                   >
-                    Operating Hours
+                    {t('shelterDetails.operatingHours')}
                   </Typography>
                   <List>
                     {formatOperatingHours().map((hours, index) => (
@@ -768,7 +831,7 @@ const ShelterDetailPage = () => {
                       mb: 3
                     }}
                   >
-                    Reviews
+                    {t('shelterDetails.reviews')}
                   </Typography>
                   {ratings.map((rating, index) => (
                     <Box key={index} sx={{ mb: 3, pb: 3, borderBottom: index < ratings.length - 1 ? 1 : 0, borderColor: 'divider' }}>
@@ -821,7 +884,7 @@ const ShelterDetailPage = () => {
                     mb: 3
                   }}
                 >
-                  Availability
+                  {t('availability')}
                 </Typography>
                 <Box sx={{ textAlign: 'center', mb: 3 }}>
                   <Typography 
@@ -838,10 +901,10 @@ const ShelterDetailPage = () => {
                     {shelter.capacity?.availableBeds || 0}
                   </Typography>
                   <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-                    of {shelter.capacity?.totalBeds || 0} beds available
+                    of {shelter.capacity?.totalBeds || 0} {t('beds')} {t('available')}
                   </Typography>
                   <Chip
-                    label="Accepting new residents"
+                    label={t('acceptingNewResidents')}
                     color="success"
                     sx={{
                       fontWeight: 600,
@@ -881,7 +944,7 @@ const ShelterDetailPage = () => {
                     mb: 3
                   }}
                 >
-                  Get Help
+                  {t('getHelp')}
                 </Typography>
                 <Stack spacing={2}>
                   <Button
@@ -902,7 +965,7 @@ const ShelterDetailPage = () => {
                       transition: 'all 0.3s ease',
                     }}
                   >
-                    Contact Shelter
+                    {t('shelterDetails.contactShelter')}
                   </Button>
                   <Button
                     variant="contained"
@@ -922,7 +985,7 @@ const ShelterDetailPage = () => {
                       transition: 'all 0.3s ease',
                     }}
                   >
-                    Get Directions
+                    {t('shelterDetails.getDirections')}
                   </Button>
                   <Button
                     variant="contained"
@@ -942,7 +1005,7 @@ const ShelterDetailPage = () => {
                       transition: 'all 0.3s ease',
                     }}
                   >
-                    Call Now
+                    {t('shelterDetails.callNow')}
                   </Button>
                 </Stack>
               </Paper>
@@ -975,7 +1038,7 @@ const ShelterDetailPage = () => {
                       mb: 3
                     }}
                   >
-                    Requirements
+                    {t('shelterDetails.requirements')}
                   </Typography>
                   <List>
                     {shelter.requirements.map((req, index) => (
@@ -984,7 +1047,7 @@ const ShelterDetailPage = () => {
                           <Security sx={{ color: req.mandatory ? '#f44336' : '#ff9800' }} />
                         </ListItemIcon>
                         <ListItemText 
-                          primary={req.type}
+                          primary={translateRequirementType(req.type)}
                           secondary={req.description}
                           sx={{ 
                             '& .MuiListItemText-primary': {
@@ -1025,7 +1088,7 @@ const ShelterDetailPage = () => {
           fontWeight: 700,
           fontSize: '1.5rem'
         }}>
-          Contact {shelter.name}
+          {t('contactInformation')} {shelter.name}
         </DialogTitle>
         <DialogContent>
           <TextField

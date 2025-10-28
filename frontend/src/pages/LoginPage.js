@@ -90,7 +90,7 @@ const LoginPage = () => {
               Welcome Back
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              Sign in to your Shelter Match account
+              Sign in to your Shelter Link account
             </Typography>
           </Box>
 

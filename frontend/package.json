@@ -1,7 +1,7 @@
 {
   "name": "shelter-match-frontend",
   "version": "1.0.0",
-  "description": "Frontend for Shelter Match App",
+  "description": "Frontend for Shelter Link App",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.1",
