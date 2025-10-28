@@ -19,6 +19,7 @@ const translations = {
     iAmA: 'I am a...',
     impact: 'Our Impact',
     demo: 'Live Demo',
+    aiMatching: 'AI Matching',
     languages: 'Languages',
     
     // Common
@@ -681,6 +682,7 @@ const translations = {
     iAmA: 'Soy un...',
     impact: 'Nuestro Impacto',
     demo: 'Demo en Vivo',
+    aiMatching: 'Coincidencia IA',
     languages: 'Idiomas',
     
     // Common
@@ -1342,6 +1344,7 @@ const translations = {
     iAmA: 'Je suis un...',
     impact: 'Notre Impact',
     demo: 'Démo en Direct',
+    aiMatching: 'Correspondance IA',
     languages: 'Langues',
     
     // Common
@@ -1993,6 +1996,7 @@ const translations = {
     iAmA: '我是...',
     impact: '我们的影响',
     demo: '实时演示',
+    aiMatching: 'AI匹配',
     languages: '语言',
     
     // Main navigation

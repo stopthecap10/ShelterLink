@@ -46,7 +46,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import SuccessStories from '../components/SuccessStories';
 import ImpactMetrics from '../components/ImpactMetrics';
-import RealDemo from '../components/RealDemo';
 import LanguageToggle from '../components/LanguageToggle';
 
 const HomePage = () => {
@@ -250,6 +249,30 @@ const HomePage = () => {
                   {t('findJobs')}
                 </Button>
                 <Button
+                  variant="outlined"
+                  size="large"
+                  onClick={() => navigate('/ai-matching')}
+                  sx={{
+                    borderColor: 'white',
+                    color: 'white',
+                    px: 4,
+                    py: 1.5,
+                    fontSize: '1.1rem',
+                    fontWeight: 600,
+                    borderRadius: 3,
+                    borderWidth: 2,
+                    '&:hover': {
+                      borderColor: 'white',
+                      bgcolor: 'rgba(255,255,255,0.1)',
+                      transform: 'translateY(-2px)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                  startIcon={<SmartToy />}
+                >
+                  {t('aiMatching')}
+                </Button>
+                <Button
                   variant="contained"
                   size="large"
                   onClick={() => navigate('/shelter-staff-login')}
@@ -428,12 +451,6 @@ const HomePage = () => {
         </Container>
       </Box>
 
-      {/* Real Interactive Demo Section */}
-      <Box sx={{ py: 12, bgcolor: 'grey.50' }}>
-        <Container maxWidth="lg">
-          <RealDemo />
-        </Container>
-      </Box>
 
       {/* CTA Section */}
       <Box

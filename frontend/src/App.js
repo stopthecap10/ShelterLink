@@ -24,10 +24,9 @@ import NotFoundPage from './pages/NotFoundPage';
 import ImpactDashboard from './components/ImpactDashboard';
 import MobileOptimization from './components/MobileOptimization';
 import PerformanceOptimization from './components/PerformanceOptimization';
-import RealDemo from './components/RealDemo';
 import ShelterStaffLogin from './pages/ShelterStaffLogin';
 import ShelterStaffDashboard from './pages/ShelterStaffDashboard';
-import LanguageOptions from './components/LanguageOptions';
+import RealDemo from './components/RealDemo';
 
 // Create Material-UI theme
 const theme = createTheme({
@@ -178,18 +177,10 @@ function App() {
                   }
                 />
                 <Route
-                  path="/demo"
+                  path="/ai-matching"
                   element={
                     <Layout>
                       <RealDemo />
-                    </Layout>
-                  }
-                />
-                <Route
-                  path="/languages"
-                  element={
-                    <Layout>
-                      <LanguageOptions />
                     </Layout>
                   }
                 />

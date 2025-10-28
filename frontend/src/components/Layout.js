@@ -84,7 +84,7 @@ const Layout = ({ children }) => {
     { icon: <Work />, text: t('findJobs'), path: '/jobs' },
     { icon: <Message />, text: t('messages'), path: '/messages' },
     { icon: <Person />, text: t('profile'), path: '/profile' },
-    { icon: <TrendingUp />, text: t('impact.title'), path: '/impact' },
+    { icon: <TrendingUp />, text: t('impact'), path: '/impact' },
     { icon: <PlayArrow />, text: t('demo'), path: '/demo' },
     { icon: <Translate />, text: t('languages'), path: '/languages' },
     { icon: <Business />, text: 'Shelter Staff', path: '/shelter-staff-login' },
@@ -201,6 +201,15 @@ const Layout = ({ children }) => {
       </Box>
     </Box>
   );
+
+  // Hide header completely for AI Matching page
+  if (location.pathname === '/ai-matching') {
+    return (
+      <Box sx={{ minHeight: '100vh' }}>
+        {children}
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -423,7 +432,7 @@ const Layout = ({ children }) => {
           bgcolor: 'background.default',
         }}
       >
-        <Toolbar /> {/* Spacer for fixed AppBar */}
+        {location.pathname !== '/ai-matching' && <Toolbar />} {/* Spacer for fixed AppBar, skip for AI Matching */}
         {children}
       </Box>
     </Box>
