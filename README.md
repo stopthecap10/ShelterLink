@@ -1,4 +1,4 @@
-# Shelter Link - Congressional App Challenge 2024
+# Shelter Link - Congressional App Challenge 2025
 
 **Breaking the Cycle of Homelessness Through Technology**
 
@@ -280,4 +280,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Together, we can break the cycle of homelessness through technology that serves humanity.**
 
-*Built for the Congressional App Challenge 2024*
+*Built for the Congressional App Challenge 2025*
