@@ -16,7 +16,6 @@ import {
   ListItemAvatar,
   Paper,
   LinearProgress,
-  useTheme,
 } from '@mui/material';
 import {
   Business,
@@ -39,7 +38,6 @@ const DashboardPage = () => {
   const { user, profile } = useAuth();
   const { unreadCount } = useSocket();
   const navigate = useNavigate();
-  // const theme = useTheme();
   const [stats, setStats] = useState({});
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);

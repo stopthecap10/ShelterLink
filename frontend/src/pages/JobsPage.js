@@ -460,7 +460,7 @@ const JobsPage = () => {
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                           {job.requirements.slice(0, 3).map((req, reqIndex) => (
                             <Chip
-                              key={reqIndex}
+                              key={`${job._id}-req-${reqIndex}`}
                               label={req}
                               size="small"
                               variant="outlined"

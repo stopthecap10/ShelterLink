@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -38,14 +38,19 @@ const MessagesPage = () => {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     fetchConversations();
-    
+
     if (conversationId) {
       fetchMessages(conversationId);
     }
   }, [conversationId]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     if (socket && isConnected) {
@@ -203,7 +208,7 @@ const MessagesPage = () => {
               {/* Messages List */}
               <CardContent sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
                 <Box sx={{ p: 2, height: '400px', overflow: 'auto' }}>
-                  {messages.map((message, index) => (
+                  {messages.map((message) => (
                     <Box
                       key={message._id}
                       sx={{
@@ -237,6 +242,7 @@ const MessagesPage = () => {
                       </Box>
                     </Box>
                   ))}
+                  <div ref={messagesEndRef} />
                 </Box>
               </CardContent>
 

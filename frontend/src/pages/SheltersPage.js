@@ -631,6 +631,7 @@ const SheltersPage = () => {
                           boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
                         }}
                         src={shelter.images?.[0]?.url}
+                        alt={shelter.name}
                       >
                         <Business sx={{ fontSize: 30 }} />
                       </Avatar>
@@ -722,7 +723,7 @@ const SheltersPage = () => {
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                         {shelter.services.slice(0, 4).map((service, serviceIndex) => (
                           <Chip
-                            key={serviceIndex}
+                            key={`${shelter._id}-service-${serviceIndex}`}
                             icon={getServiceIcon(service.name)}
                             label={translateServiceName(service.name)}
                             size="small"

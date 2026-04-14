@@ -21,29 +21,23 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on('connect', () => {
-        console.log('Socket connected');
         setIsConnected(true);
       });
 
       newSocket.on('disconnect', () => {
-        console.log('Socket disconnected');
         setIsConnected(false);
       });
 
-      newSocket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
+      newSocket.on('connect_error', () => {
         setIsConnected(false);
       });
 
       // Listen for real-time updates
-      newSocket.on('availability-updated', (data) => {
-        console.log('Shelter availability updated:', data);
+      newSocket.on('availability-updated', () => {
         // You can emit a custom event or update state here
       });
 
-      newSocket.on('receive-message', (data) => {
-        console.log('New message received:', data);
-        // Update unread count or show notification
+      newSocket.on('receive-message', () => {
         setUnreadCount(prev => prev + 1);
       });
 
@@ -60,7 +54,7 @@ export const SocketProvider = ({ children }) => {
         setIsConnected(false);
       }
     }
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, socket]);
 
   // Join a room for real-time updates
   const joinRoom = (roomId) => {

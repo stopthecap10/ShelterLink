@@ -37,7 +37,7 @@ const authenticateToken = async (req, res, next) => {
 
 // Check if user is a shelter
 const requireShelter = (req, res, next) => {
-  if (req.user.userType !== 'shelter') {
+  if (!req.user || req.user.userType !== 'shelter') {
     return res.status(403).json({ message: 'Shelter access required' });
   }
   next();
@@ -45,7 +45,7 @@ const requireShelter = (req, res, next) => {
 
 // Check if user is an individual
 const requireIndividual = (req, res, next) => {
-  if (req.user.userType !== 'individual') {
+  if (!req.user || req.user.userType !== 'individual') {
     return res.status(403).json({ message: 'Individual access required' });
   }
   next();
@@ -53,7 +53,7 @@ const requireIndividual = (req, res, next) => {
 
 // Check if user is verified
 const requireVerified = (req, res, next) => {
-  if (!req.user.isVerified) {
+  if (!req.user || !req.user.isVerified) {
     return res.status(403).json({ message: 'Account verification required' });
   }
   next();

@@ -271,8 +271,7 @@ router.post('/forgot-password', [
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
-    // In a real app, send email with reset link
-    console.log(`Password reset token for ${email}: ${resetToken}`);
+    // TODO: send email with reset link via email service (e.g. SendGrid)
 
     res.json({ message: 'If the email exists, a reset link has been sent' });
   } catch (error) {
@@ -353,8 +352,7 @@ router.post('/verify-email', authenticateToken, async (req, res) => {
     user.verificationToken = verificationToken;
     await user.save();
 
-    // In a real app, send verification email
-    console.log(`Verification token for ${user.email}: ${verificationToken}`);
+    // TODO: send verification email via email service (e.g. SendGrid)
 
     res.json({ message: 'Verification email sent' });
   } catch (error) {
