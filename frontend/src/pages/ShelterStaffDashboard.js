@@ -153,12 +153,11 @@ const ShelterStaffDashboard = () => {
   const handleUpdateSubmit = async () => {
     setUpdating(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Update shared context
-      updateShelterCapacity(shelter._id, updateData.availableBeds, updateData.totalBeds);
-      
+      const token = staffSession?.token || null;
+
+      // Update shared context (also persists to API if token available)
+      await updateShelterCapacity(shelter._id, updateData.availableBeds, updateData.totalBeds, token);
+
       // Update local state
       setShelter(prev => ({
         ...prev,

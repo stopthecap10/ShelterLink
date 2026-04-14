@@ -22,6 +22,7 @@ import {
   Security,
   Home,
 } from '@mui/icons-material';
+import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const ShelterStaffLogin = () => {
@@ -50,34 +51,57 @@ const ShelterStaffLogin = () => {
     setError('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock validation - in real app, this would be API call
-      if (formData.email === 'staff@urm.org' && formData.password === 'staff123' && formData.shelterId === '1') {
-        // Store staff session
+      // Try real API authentication first
+      const response = await axios.post('/api/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      const { token, user } = response.data;
+
+      // Verify the user is a shelter account
+      if (user.userType !== 'shelter') {
+        setError('This account does not have shelter staff access.');
+        return;
+      }
+
+      // Fetch the shelter associated with this user
+      const sheltersRes = await axios.get('/api/shelters?limit=50');
+      const myShelter = sheltersRes.data.shelters?.find(
+        s => s.user?._id === user._id || s.user?.toString() === user._id
+      );
+
+      localStorage.setItem('shelter-staff-session', JSON.stringify({
+        shelterId: myShelter?._id || formData.shelterId,
+        email: user.email,
+        role: 'staff',
+        shelterName: myShelter?.name || 'Your Shelter',
+        token,
+      }));
+
+      navigate('/shelter-staff-dashboard');
+    } catch (apiErr) {
+      // Fall back to hardcoded demo credentials if backend is unavailable
+      const demoCreds = {
+        'staff@urm.org':      { password: 'staff123', shelterId: '1', shelterName: 'Union Rescue Mission' },
+        'staff@lamission.org': { password: 'staff123', shelterId: '2', shelterName: 'Los Angeles Mission' },
+        'staff@dwcweb.org':   { password: 'staff123', shelterId: '3', shelterName: "Downtown Women's Center" },
+        'staff@havenhouse.org': { password: 'staff123', shelterId: '4', shelterName: 'Haven House' },
+      };
+
+      const demo = demoCreds[formData.email];
+      if (demo && demo.password === formData.password) {
         localStorage.setItem('shelter-staff-session', JSON.stringify({
-          shelterId: formData.shelterId,
+          shelterId: demo.shelterId,
           email: formData.email,
           role: 'staff',
-          shelterName: 'Union Rescue Mission'
+          shelterName: demo.shelterName,
+          token: null,
         }));
-        
-        navigate('/shelter-staff-dashboard');
-      } else if (formData.email === 'staff@lamission.org' && formData.password === 'staff123' && formData.shelterId === '2') {
-        localStorage.setItem('shelter-staff-session', JSON.stringify({
-          shelterId: formData.shelterId,
-          email: formData.email,
-          role: 'staff',
-          shelterName: 'Los Angeles Mission'
-        }));
-        
         navigate('/shelter-staff-dashboard');
       } else {
-        setError('Invalid credentials. Please check your email, password, and shelter ID.');
+        setError('Invalid credentials. Please check your email and password.');
       }
-    } catch (err) {
-      setError('Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -127,31 +151,28 @@ const ShelterStaffLogin = () => {
             </Box>
 
             {/* Demo Credentials */}
-            <Alert 
-              severity="info" 
-              sx={{ 
-                mb: 3, 
+            <Alert
+              severity="info"
+              sx={{
+                mb: 3,
                 borderRadius: 3,
                 background: 'rgba(102, 126, 234, 0.1)',
                 border: '1px solid rgba(102, 126, 234, 0.2)',
               }}
             >
               <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
-                Demo Credentials:
+                Demo Credentials (password: staff123)
               </Typography>
-              <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
-                <strong>Union Rescue Mission:</strong><br />
-                Email: staff@urm.org<br />
-                Password: staff123<br />
-                Shelter ID: 1
-              </Typography>
-              <Divider sx={{ my: 1 }} />
-              <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
-                <strong>Los Angeles Mission:</strong><br />
-                Email: staff@lamission.org<br />
-                Password: staff123<br />
-                Shelter ID: 2
-              </Typography>
+              {[
+                ['Union Rescue Mission', 'staff@urm.org'],
+                ['Los Angeles Mission', 'staff@lamission.org'],
+                ["Downtown Women's Center", 'staff@dwcweb.org'],
+                ['Haven House', 'staff@havenhouse.org'],
+              ].map(([name, email], i) => (
+                <Typography key={i} variant="body2" sx={{ fontSize: '0.82rem' }}>
+                  <strong>{name}:</strong> {email}
+                </Typography>
+              ))}
             </Alert>
 
             {/* Error Alert */}
@@ -212,28 +233,7 @@ const ShelterStaffLogin = () => {
                   }}
                 />
 
-                <TextField
-                  name="shelterId"
-                  label="Shelter ID"
-                  value={formData.shelterId}
-                  onChange={handleChange}
-                  required
-                  fullWidth
-                  InputProps={{
-                    startAdornment: <Home sx={{ color: '#667eea', mr: 1 }} />,
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 3,
-                      '&:hover fieldset': {
-                        borderColor: '#667eea',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#667eea',
-                      },
-                    },
-                  }}
-                />
+
 
                 <Button
                   type="submit"

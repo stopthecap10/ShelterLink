@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 import { mockShelters } from '../api/mockData';
 
 const ShelterDataContext = createContext();
@@ -12,49 +13,63 @@ export const useShelterData = () => {
 };
 
 export const ShelterDataProvider = ({ children }) => {
-  const [shelters, setShelters] = useState(mockShelters);
+  const [shelters, setShelters] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Load shelters from localStorage on mount
   useEffect(() => {
-    const savedShelters = localStorage.getItem('shelter-data');
-    if (savedShelters) {
-      try {
-        setShelters(JSON.parse(savedShelters));
-      } catch (error) {
-        console.error('Error loading saved shelter data:', error);
-      }
-    }
+    fetchShelters();
   }, []);
 
-  // Save shelters to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('shelter-data', JSON.stringify(shelters));
-  }, [shelters]);
+  const fetchShelters = async () => {
+    try {
+      const response = await axios.get('/api/shelters?limit=50');
+      const fetched = response.data.shelters;
+      if (fetched && fetched.length > 0) {
+        setShelters(fetched);
+      } else {
+        // API returned empty — use mock data so the UI is never blank
+        setShelters(mockShelters);
+      }
+    } catch {
+      // API unreachable (local dev without backend, etc.) — fall back to mock
+      setShelters(mockShelters);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const updateShelterCapacity = (shelterId, availableBeds, totalBeds) => {
-    setShelters(prevShelters => 
-      prevShelters.map(shelter => 
-        shelter._id === shelterId 
-          ? {
-              ...shelter,
-              capacity: {
-                ...shelter.capacity,
-                availableBeds,
-                totalBeds,
-              },
-              lastUpdated: new Date().toISOString(),
-            }
-          : shelter
+  const updateShelterCapacity = async (shelterId, availableBeds, totalBeds, token) => {
+    // Optimistically update UI
+    setShelters(prev =>
+      prev.map(s =>
+        (s._id === shelterId || s._id?.toString() === shelterId)
+          ? { ...s, capacity: { ...s.capacity, availableBeds, totalBeds }, lastUpdated: new Date().toISOString() }
+          : s
       )
     );
+
+    // Persist to backend if a JWT token is available
+    if (token) {
+      try {
+        await axios.put(
+          `/api/shelters/${shelterId}/availability`,
+          { availableBeds },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } catch (err) {
+        console.error('Failed to persist bed count to API:', err);
+      }
+    }
   };
 
   const getShelterById = (shelterId) => {
-    return shelters.find(shelter => shelter._id === shelterId);
+    return shelters.find(s => s._id === shelterId || s._id?.toString() === shelterId);
   };
 
   const value = {
     shelters,
+    loading,
+    fetchShelters,
     updateShelterCapacity,
     getShelterById,
   };
@@ -65,3 +80,5 @@ export const ShelterDataProvider = ({ children }) => {
     </ShelterDataContext.Provider>
   );
 };
+
+export default ShelterDataContext;

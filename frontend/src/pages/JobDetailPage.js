@@ -204,91 +204,65 @@ const JobDetailPage = () => {
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
             }}
           >
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                {/* Left side - Navigation buttons */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Button 
-                    variant="outlined" 
+            <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+              {/* Top row: back nav + language toggle */}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Button
+                    variant="text"
                     startIcon={<Home />}
                     onClick={() => navigate('/')}
-                    sx={{ 
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      px: 3,
-                      py: 1,
-                    }}
+                    sx={{ textTransform: 'none', fontWeight: 600, color: '#667eea' }}
                   >
                     {t('home')}
                   </Button>
-                  <Button 
-                    variant="outlined" 
+                  <Typography sx={{ color: '#bdc3c7' }}>/</Typography>
+                  <Button
+                    variant="text"
                     startIcon={<ArrowBack />}
                     onClick={() => navigate('/jobs')}
-                    sx={{ 
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      px: 3,
-                      py: 1,
-                    }}
+                    sx={{ textTransform: 'none', fontWeight: 600, color: '#667eea' }}
                   >
                     {t('backToJobs')}
                   </Button>
                 </Box>
-
-                {/* Center - Job title and company */}
-                <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, justifyContent: 'center' }}>
-                  <Avatar
-                    sx={{ 
-                      width: 80, 
-                      height: 80, 
-                      mr: 3, 
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
-                    }}
-                  >
-                    <Work sx={{ fontSize: 40, color: 'white' }} />
-                  </Avatar>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1, color: '#2c3e50' }}>
-                      {job.title}
-                    </Typography>
-                    <Typography variant="h6" sx={{ color: '#7f8c8d', fontWeight: 500 }}>
-                      {job.company.name}
-                    </Typography>
-                  </Box>
-                </Box>
-                
-                {/* Right side - Language Toggle */}
                 <LanguageToggle />
               </Box>
-              
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
-                <Button 
-                  variant="outlined" 
-                  startIcon={<Share />}
-                  sx={{ 
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    px: 3,
-                    py: 1,
+
+              {/* Center: avatar + title + company */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+                <Avatar
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    mb: 2,
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)',
                   }}
+                >
+                  <Work sx={{ fontSize: 40, color: 'white' }} />
+                </Avatar>
+                <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: '#2c3e50', textAlign: 'center', mb: 0.5 }}>
+                  {job.title}
+                </Typography>
+                <Typography variant="h6" sx={{ color: '#7f8c8d', fontWeight: 500, textAlign: 'center' }}>
+                  {job.company.name}
+                </Typography>
+              </Box>
+
+              {/* Bottom row: action buttons */}
+              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                <Button
+                  variant="outlined"
+                  startIcon={<Share />}
+                  sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
                 >
                   {t('share')}
                 </Button>
-                <Button 
-                  variant="outlined" 
+                <Button
+                  variant="outlined"
                   startIcon={<Bookmark />}
-                  sx={{ 
-                    borderRadius: 2,
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    px: 3,
-                    py: 1,
-                  }}
+                  sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
                 >
                   {t('bookmark')}
                 </Button>

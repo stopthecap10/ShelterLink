@@ -45,6 +45,7 @@ app.use('/api/individuals', require('./routes/individuals'));
 app.use('/api/jobs', require('./routes/jobs'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/ratings', require('./routes/ratings'));
+app.use('/api/match', require('./routes/matching'));
 
 // Socket.io connection handling
 io.on('connection', (socket) => {

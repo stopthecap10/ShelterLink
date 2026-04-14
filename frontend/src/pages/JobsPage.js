@@ -46,6 +46,7 @@ import {
   Security,
   Speed,
 } from '@mui/icons-material';
+import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
 import { mockJobService } from '../api/mockData';
 import LanguageToggle from '../components/LanguageToggle';
@@ -69,11 +70,23 @@ const JobsPage = () => {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const response = await mockJobService.getJobs();
-      setJobs(response.jobs || []);
-    } catch (err) {
-      setError('Failed to load jobs');
-      console.error('Error fetching jobs:', err);
+      const response = await axios.get('/api/jobs?limit=50');
+      const fetched = response.data.jobs;
+      if (fetched && fetched.length > 0) {
+        setJobs(fetched);
+      } else {
+        // API returned empty — fall back to mock data
+        const mock = await mockJobService.getJobs();
+        setJobs(mock.jobs || []);
+      }
+    } catch {
+      // API unreachable — fall back to mock data
+      try {
+        const mock = await mockJobService.getJobs();
+        setJobs(mock.jobs || []);
+      } catch (err) {
+        setError('Failed to load jobs');
+      }
     } finally {
       setLoading(false);
     }

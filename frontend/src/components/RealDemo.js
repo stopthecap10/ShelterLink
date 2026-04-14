@@ -30,7 +30,8 @@ import {
   Gavel,
   LocalHospital as Medical,
 } from '@mui/icons-material';
-import { mockShelterService, mockJobService } from '../api/mockData';
+import axios from 'axios';
+import { mockShelterService } from '../api/mockData';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const RealDemo = () => {
@@ -78,121 +79,162 @@ const RealDemo = () => {
 
   const runAIMatching = async () => {
     if (!userProfile.name || !userProfile.needs.length) return;
-    
+
     setIsRunning(true);
     setProcessingSteps([]);
     setCurrentStep(null);
-    
+
     try {
-      // Step 1: Risk Assessment
+      // Step 1: Needs Analysis
       setCurrentStep('needs_analysis');
-      setProcessingSteps(prev => [...prev, {
+      setProcessingSteps([{
         step: 'needs_analysis',
-        title: 'Risk Assessment',
-        description: 'Evaluating individual circumstances and service requirements...',
-        status: 'processing'
+        title: 'Needs Analysis',
+        description: 'Evaluating your circumstances and service requirements...',
+        status: 'processing',
       }]);
-      
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setProcessingSteps(prev => prev.map(step => 
-        step.step === 'needs_analysis' 
-          ? { ...step, status: 'completed', details: 'Risk Level: Moderate | Primary Needs: Housing, Support Services | Status: Seeking Assistance' }
-          : step
+
+      await new Promise(r => setTimeout(r, 1000));
+
+      setProcessingSteps(prev => prev.map(s =>
+        s.step === 'needs_analysis'
+          ? { ...s, status: 'completed', details: `Identified ${userProfile.needs.length} primary need(s) · Family size: ${userProfile.familySize} · Urgency: ${userProfile.urgencyLevel.replace('_', ' ')}` }
+          : s
       ));
-      
-      // Step 2: Shelter Matching
+
+      // Step 2: Shelter Matching (real algorithm)
       setCurrentStep('shelter_matching');
       setProcessingSteps(prev => [...prev, {
         step: 'shelter_matching',
         title: 'Shelter Matching',
-        description: 'Analyzing shelter availability and service compatibility...',
-        status: 'processing'
+        description: 'Scoring shelters by service match, distance, availability, and rating...',
+        status: 'processing',
       }]);
-      
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Get shelter data properly
-      const sheltersResponse = await mockShelterService.getShelters();
-      
-      // AI matching logic based on user needs
-      const matchedShelters = sheltersResponse.shelters
-        .filter(shelter => {
-          // Check if shelter has services matching user needs
-          return userProfile.needs.some(need => 
-            shelter.services.some(service => 
-              service.name.toLowerCase().includes(need.replace('_', ' ')) ||
-              (need === 'housing' && service.name.toLowerCase().includes('shelter')) ||
-              (need === 'mental_health' && service.name.toLowerCase().includes('counseling')) ||
-              (need === 'substance_abuse' && service.name.toLowerCase().includes('recovery')) ||
-              (need === 'domestic_violence' && service.name.toLowerCase().includes('counseling')) ||
-              (need === 'food_assistance' && service.name.toLowerCase().includes('meal')) ||
-              (need === 'clothing' && service.name.toLowerCase().includes('clothing')) ||
-              (need === 'transportation' && service.name.toLowerCase().includes('transportation')) ||
-              (need === 'legal_aid' && service.name.toLowerCase().includes('legal')) ||
-              (need === 'medical_care' && service.name.toLowerCase().includes('medical'))
-            )
-          );
-        })
-        .map(shelter => ({
-          ...shelter,
-          matchScore: Math.floor(Math.random() * 20) + 80, // 80-99%
-          waitTime: Math.floor(Math.random() * 7) + 1, // 1-7 days
-          successRate: Math.floor(Math.random() * 15) + 85, // 85-99%
-          reasoning: `Matches ${userProfile.needs.length} of your needs. High availability with ${shelter.capacity.availableBeds} beds.`
-        }))
-        .sort((a, b) => b.matchScore - a.matchScore)
-        .slice(0, 3);
 
-      setProcessingSteps(prev => prev.map(step => 
-        step.step === 'shelter_matching' 
-          ? { ...step, status: 'completed', details: `Identified ${matchedShelters.length} compatible shelters with 85-98% compatibility scores` }
-          : step
+      // Get user coordinates if location string is provided (best-effort)
+      let userLat = null;
+      let userLng = null;
+      if (userProfile.location) {
+        try {
+          const geo = await axios.get(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userProfile.location + ', Los Angeles, CA')}&format=json&limit=1`
+          );
+          if (geo.data?.[0]) {
+            userLat = parseFloat(geo.data[0].lat);
+            userLng = parseFloat(geo.data[0].lon);
+          }
+        } catch {
+          // Geolocation failed — matching will skip distance factor
+        }
+      }
+
+      let matchedShelters = [];
+
+      try {
+        // Call real matching API
+        const matchRes = await axios.post('/api/match', {
+          needs: userProfile.needs,
+          specialRequirements: userProfile.specialRequirements,
+          userLat,
+          userLng,
+          familySize: parseInt(userProfile.familySize),
+          name: userProfile.name,
+          employmentStatus: userProfile.employmentStatus,
+          urgencyLevel: userProfile.urgencyLevel,
+        });
+
+        matchedShelters = matchRes.data.matches.map(m => ({
+          ...m.shelter,
+          matchScore: m.matchScore,
+          distanceMiles: m.distanceMiles,
+          reasoning: m.reasoning,
+          breakdown: m.breakdown,
+        }));
+      } catch {
+        // API unavailable — fall back to client-side scoring on mock data
+        const sheltersRes = await mockShelterService.getShelters();
+        const NEED_KEYWORDS = {
+          housing: ['shelter', 'housing', 'emergency'],
+          employment: ['job', 'employment', 'training'],
+          mental_health: ['mental', 'counseling'],
+          substance_abuse: ['recovery', 'substance'],
+          domestic_violence: ['domestic', 'women'],
+          food_assistance: ['meal', 'food'],
+          clothing: ['clothing'],
+          transportation: ['transportation', 'transit'],
+          legal_aid: ['legal'],
+          medical_care: ['medical', 'health'],
+        };
+
+        matchedShelters = sheltersRes.shelters.map(shelter => {
+          const svcText = shelter.services.map(s => s.name.toLowerCase()).join(' ');
+          let matched = 0;
+          for (const need of userProfile.needs) {
+            const kws = NEED_KEYWORDS[need] || [need];
+            if (kws.some(k => svcText.includes(k))) matched++;
+          }
+          const svcScore = userProfile.needs.length ? matched / userProfile.needs.length : 0;
+          const availScore = shelter.capacity.totalBeds
+            ? shelter.capacity.availableBeds / shelter.capacity.totalBeds : 0;
+          const ratingScore = (shelter.rating?.average || 0) / 5;
+          const total = svcScore * 0.5 + availScore * 0.3 + ratingScore * 0.2;
+
+          return {
+            ...shelter,
+            matchScore: Math.round(total * 100),
+            reasoning: `${Math.round(svcScore * 100)}% service match · ${shelter.capacity.availableBeds} beds available`,
+            breakdown: { serviceMatch: Math.round(svcScore * 100), availability: Math.round(availScore * 100), rating: Math.round(ratingScore * 100) },
+          };
+        })
+        .filter(s => s.shelter?.capacity?.availableBeds > 0 || s.capacity?.availableBeds > 0)
+        .sort((a, b) => b.matchScore - a.matchScore)
+        .slice(0, 5);
+      }
+
+      setProcessingSteps(prev => prev.map(s =>
+        s.step === 'shelter_matching'
+          ? { ...s, status: 'completed', details: `Scored ${matchedShelters.length} compatible shelter(s) using service match, distance, availability, and ratings` }
+          : s
       ));
-      
-      // Step 3: Results Generation
+
+      // Step 3: Finalizing
       setCurrentStep('results_generation');
       setProcessingSteps(prev => [...prev, {
         step: 'results_generation',
-        title: 'Results Generation',
-        description: 'Calculating success probabilities and finalizing matches...',
-        status: 'processing'
+        title: 'Finalizing Results',
+        description: 'Ranking matches and preparing personalized recommendations...',
+        status: 'processing',
       }]);
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setProcessingSteps(prev => prev.map(step => 
-        step.step === 'results_generation' 
-          ? { ...step, status: 'completed', details: 'Success probabilities calculated. Personalized recommendations ready.' }
-          : step
+
+      await new Promise(r => setTimeout(r, 800));
+
+      setProcessingSteps(prev => prev.map(s =>
+        s.step === 'results_generation'
+          ? { ...s, status: 'completed', details: 'Recommendations ranked and ready.' }
+          : s
       ));
+
+      const topScore = matchedShelters[0]?.matchScore || 0;
 
       setDemoData({
         userProfile,
-        recommendations: {
-          shelters: matchedShelters
-        },
+        recommendations: { shelters: matchedShelters },
         aiAnalysis: {
-          confidence: Math.floor(Math.random() * 20) + 80, // 80-99%
-          processingTime: '4.7 seconds',
+          confidence: topScore,
           matchesFound: matchedShelters.length,
-          personalizedScore: Math.floor(Math.random() * 15) + 85 // 85-99%
-        }
+        },
       });
-      
+
       setCurrentStep(null);
     } catch (error) {
-      console.error('AI Matching Error:', error);
       setDemoData({
         userProfile,
-        recommendations: {
-          shelters: []
-        },
-        error: 'AI matching temporarily unavailable. Please try again.'
+        recommendations: { shelters: [] },
+        error: 'Matching temporarily unavailable. Please try again.',
       });
       setCurrentStep(null);
     }
-    
+
     setIsRunning(false);
   };
 
