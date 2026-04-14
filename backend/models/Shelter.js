@@ -85,9 +85,6 @@ const shelterSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for geospatial queries
-shelterSchema.index({ "address.coordinates": "2dsphere" });
-
 // Index for text search
 shelterSchema.index({ 
   name: "text", 
