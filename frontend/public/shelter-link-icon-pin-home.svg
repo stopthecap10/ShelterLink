@@ -1,0 +1,16 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+  </defs>
+  <rect x="132" y="132" width="760" height="760" rx="180" fill="url(#grad)"/>
+  <!-- Pin with house cutout -->
+  <g transform="translate(0,20)">
+    <path d="M512 260c-110 0-200 90-200 200 0 160 200 320 200 320s200-160 200-320c0-110-90-200-200-200z" fill="#fff" fill-opacity="0.92"/>
+    <path d="M442 468l70-56 70 56v116c0 8.8-7.2 16-16 16H458c-8.8 0-16-7.2-16-16V468z" fill="url(#grad)"/>
+    <rect x="500" y="516" width="48" height="80" rx="8" fill="#fff"/>
+  </g>
+</svg>
+

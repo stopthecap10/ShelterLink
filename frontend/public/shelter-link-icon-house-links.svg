@@ -1,0 +1,27 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+  </defs>
+  <!-- Background badge -->
+  <rect x="132" y="132" width="760" height="760" rx="160" fill="url(#grad)"/>
+
+  <!-- House (top) -->
+  <g transform="translate(0,-20)">
+    <path d="M416 420l96-76 96 76v124c0 8.8-7.2 16-16 16H432c-8.8 0-16-7.2-16-16V420z" fill="#ffffff"/>
+    <rect x="492" y="472" width="40" height="70" rx="8" fill="url(#grad)"/>
+  </g>
+
+  <!-- Interlocking links (below house) -->
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M340 620c0-42 34-76 76-76h124" stroke-width="54" opacity="0.95"/>
+    <path d="M540 716H416c-42 0-76 34-76 76s34 76 76 76h124" stroke-width="54" opacity="0.85"/>
+    <path d="M560 544h124c42 0 76 34 76 76s-34 76-76 76h-88" stroke-width="54" opacity="0.95"/>
+  </g>
+
+  <!-- subtle ring -->
+  <rect x="132" y="132" width="760" height="760" rx="160" fill="none" stroke="#fff" stroke-opacity="0.22" stroke-width="8"/>
+</svg>
+

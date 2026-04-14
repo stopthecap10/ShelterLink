@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Export Shelter Link Logo to PNG</title>
+    <style>
+      body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 24px; color: #1a1a1a; }
+      .panel { max-width: 900px; margin: 0 auto; }
+      .preview { display: flex; gap: 24px; flex-wrap: wrap; margin: 16px 0 24px; }
+      .card { border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 16px; width: 420px; }
+      .controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+      button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: 0; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+      select, input[type=number] { padding: 8px 10px; border: 1px solid #d0d0d0; border-radius: 8px; }
+      .hint { color: #666; font-size: 12px; margin-top: 8px; }
+      img { display: block; max-width: 100%; height: auto; background: #fff; border-radius: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <h1>Export Shelter Link Logo to PNG</h1>
+      <p>Select the asset and size, then click "Download PNG". This runs entirely in your browser.</p>
+
+      <div class="preview">
+        <div class="card">
+          <h3>Icon – Pin + Home</h3>
+          <img id="iconPin" src="./shelter-link-icon-pin-home.svg" alt="Shelter Link Icon – Pin Home" />
+          <div class="controls">
+            <label>Size:</label>
+            <select id="sizePin">
+              <option value="256">256 px</option>
+              <option value="512" selected>512 px</option>
+              <option value="1024">1024 px</option>
+            </select>
+            <button id="downloadPin">Download PNG</button>
+          </div>
+          <div class="hint">Rounded-square badge with a map pin and house.</div>
+        </div>
+
+        <div class="card">
+          <h3>Icon – SL Monogram</h3>
+          <img id="iconSL" src="./shelter-link-icon-sl-monogram.svg" alt="Shelter Link Icon – SL Monogram" />
+          <div class="controls">
+            <label>Size:</label>
+            <select id="sizeSL">
+              <option value="256">256 px</option>
+              <option value="512" selected>512 px</option>
+              <option value="1024">1024 px</option>
+            </select>
+            <button id="downloadSL">Download PNG</button>
+          </div>
+          <div class="hint">Bold, readable initials with a subtle link notch.</div>
+        </div>
+
+        <div class="card">
+          <h3>Icon – Roof Badge</h3>
+          <img id="iconRoof" src="./shelter-link-icon-roof-badge.svg" alt="Shelter Link Icon – Roof Badge" />
+          <div class="controls">
+            <label>Size:</label>
+            <select id="sizeRoof">
+              <option value="256">256 px</option>
+              <option value="512" selected>512 px</option>
+              <option value="1024">1024 px</option>
+            </select>
+            <button id="downloadRoof">Download PNG</button>
+          </div>
+          <div class="hint">Shield-style badge with roof and door.</div>
+        </div>
+
+        <div class="card">
+          <h3>Wordmark</h3>
+          <img id="wordmarkPreview" src="./shelter-link-logo-wordmark.svg" alt="Shelter Link Wordmark" />
+          <div class="controls">
+            <label>Width:</label>
+            <select id="wordmarkWidth">
+              <option value="800">800 px</option>
+              <option value="1200" selected>1200 px</option>
+              <option value="1600">1600 px</option>
+            </select>
+            <button id="downloadWordmark">Download PNG</button>
+          </div>
+          <div class="hint">Use the wordmark for headers, presentations, and marketing.</div>
+        </div>
+
+        <div class="card">
+          <h3>Icon – House Above Links</h3>
+          <img id="iconHouseLinks" src="./shelter-link-icon-house-links.svg" alt="Shelter Link Icon – House Above Links" />
+          <div class="controls">
+            <label>Size:</label>
+            <select id="sizeHouseLinks">
+              <option value="256">256 px</option>
+              <option value="512" selected>512 px</option>
+              <option value="1024">1024 px</option>
+            </select>
+            <button id="downloadHouseLinks">Download PNG</button>
+          </div>
+          <div class="hint">House symbol stacked over interlocking links.</div>
+        </div>
+
+        <div class="card" style="width: 100%; max-width: 900px;">
+          <h3>YouTube Thumbnail (1280x720)</h3>
+          <img id="ytPreview" src="./shelter-link-thumbnail-roof-badge.svg" alt="Shelter Link Thumbnail – Roof Badge" />
+          <div class="controls">
+            <button id="downloadYT">Download 1280×720 PNG</button>
+            <button id="downloadYTJpeg">Download 1280×720 JPEG</button>
+          </div>
+          <div class="hint">Optimized for YouTube thumbnails. Uses the Roof Badge with wordmark.</div>
+        </div>
+
+        <div class="card" style="width: 100%; max-width: 600px;">
+          <h3>Portrait Thumbnail (600x800)</h3>
+          <img id="ytPreview600" src="./shelter-link-thumbnail-roof-badge-600x800.svg" alt="Shelter Link Thumbnail – 600x800" />
+          <div class="controls">
+            <button id="downloadYT600">Download 600×800 PNG</button>
+            <button id="downloadYT600Jpeg">Download 600×800 JPEG</button>
+          </div>
+          <div class="hint">Portrait format for social media and vertical displays. Uses the Roof Badge with wordmark.</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function svgToPng(svgUrl, outWidth, outHeight, filename) {
+        const svgText = await fetch(svgUrl).then(r => r.text());
+        const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        const load = new Promise(res => { img.onload = res; });
+        img.src = url;
+        await load;
+
+        // If height not provided, maintain aspect ratio from intrinsic size
+        if (!outHeight) {
+          const ratio = img.naturalHeight / img.naturalWidth;
+          outHeight = Math.round(outWidth * ratio);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = outWidth;
+        canvas.height = outHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height); // white background
+        ctx.drawImage(img, 0, 0, outWidth, outHeight);
+
+        canvas.toBlob((blob) => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          a.click();
+          URL.revokeObjectURL(a.href);
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      }
+
+      document.getElementById('downloadPin').addEventListener('click', () => {
+        const size = parseInt(document.getElementById('sizePin').value, 10);
+        svgToPng('./shelter-link-icon-pin-home.svg', size, size, `shelter-link-icon-pin-${size}.png`);
+      });
+
+      document.getElementById('downloadSL').addEventListener('click', () => {
+        const size = parseInt(document.getElementById('sizeSL').value, 10);
+        svgToPng('./shelter-link-icon-sl-monogram.svg', size, size, `shelter-link-icon-sl-${size}.png`);
+      });
+
+      document.getElementById('downloadRoof').addEventListener('click', () => {
+        const size = parseInt(document.getElementById('sizeRoof').value, 10);
+        svgToPng('./shelter-link-icon-roof-badge.svg', size, size, `shelter-link-icon-roof-${size}.png`);
+      });
+
+      document.getElementById('downloadWordmark').addEventListener('click', () => {
+        const width = parseInt(document.getElementById('wordmarkWidth').value, 10);
+        svgToPng('./shelter-link-logo-wordmark.svg', width, undefined, `shelter-link-wordmark-${width}.png`);
+      });
+
+      document.getElementById('downloadHouseLinks').addEventListener('click', () => {
+        const size = parseInt(document.getElementById('sizeHouseLinks').value, 10);
+        svgToPng('./shelter-link-icon-house-links.svg', size, size, `shelter-link-icon-house-links-${size}.png`);
+      });
+
+      async function svgToJpeg(svgUrl, outWidth, outHeight, filename) {
+        const svgText = await fetch(svgUrl).then(r => r.text());
+        const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        const load = new Promise(res => { img.onload = res; });
+        img.src = url;
+        await load;
+
+        if (!outHeight) {
+          const ratio = img.naturalHeight / img.naturalWidth;
+          outHeight = Math.round(outWidth * ratio);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = outWidth;
+        canvas.height = outHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, outWidth, outHeight);
+
+        canvas.toBlob((blob) => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          a.click();
+          URL.revokeObjectURL(a.href);
+          URL.revokeObjectURL(url);
+        }, 'image/jpeg', 0.95);
+      }
+
+      document.getElementById('downloadYT').addEventListener('click', () => {
+        svgToPng('./shelter-link-thumbnail-roof-badge.svg', 1280, 720, 'shelter-link-youtube-thumb-1280x720.png');
+      });
+
+      document.getElementById('downloadYTJpeg').addEventListener('click', () => {
+        svgToJpeg('./shelter-link-thumbnail-roof-badge.svg', 1280, 720, 'shelter-link-youtube-thumb-1280x720.jpg');
+      });
+
+      document.getElementById('downloadYT600').addEventListener('click', () => {
+        svgToPng('./shelter-link-thumbnail-roof-badge-600x800.svg', 600, 800, 'shelter-link-thumbnail-600x800.png');
+      });
+
+      document.getElementById('downloadYT600Jpeg').addEventListener('click', () => {
+        svgToJpeg('./shelter-link-thumbnail-roof-badge-600x800.svg', 600, 800, 'shelter-link-thumbnail-600x800.jpg');
+      });
+    </script>
+  </body>
+  </html>
+
+

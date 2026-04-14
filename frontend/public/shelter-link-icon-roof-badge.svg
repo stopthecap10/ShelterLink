@@ -1,0 +1,15 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+  </defs>
+  <rect x="132" y="132" width="760" height="760" rx="180" fill="url(#grad)"/>
+  <!-- Shield/Badge -->
+  <path d="M512 300l188 68v132c0 138-188 224-188 224s-188-86-188-224V368l188-68z" fill="#ffffff" fill-opacity="0.95"/>
+  <!-- Roof + door -->
+  <path d="M422 488l90-68 90 68v104c0 7.7-6.3 14-14 14H436c-7.7 0-14-6.3-14-14V488z" fill="url(#grad)"/>
+  <rect x="498" y="530" width="48" height="82" rx="8" fill="#fff"/>
+</svg>
+

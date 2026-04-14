@@ -1,0 +1,27 @@
+<svg width="1400" height="400" viewBox="0 0 1400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon (left) -->
+  <g transform="translate(60,40)">
+    <circle cx="160" cy="160" r="140" fill="url(#grad)"/>
+    <g transform="translate(48,62)" stroke="#fff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M92 142c-22 0-40-18-40-40s18-40 40-40h60" stroke-width="20" opacity="0.95"/>
+      <path d="M152 182H92c-22 0-40 18-40 40s18 40 40 40h60" stroke-width="20" opacity="0.85"/>
+      <path d="M182 62h60c22 0 40 18 40 40s-18 40-40 40h-42" stroke-width="20" opacity="0.95"/>
+      <path d="M150 130l36-28 36 28v62c0 3.8-3.2 7-7 7h-58c-3.8 0-7-3.2-7-7v-62z" fill="#fff" stroke="none"/>
+      <rect x="183" y="152" width="20" height="30" rx="3" fill="url(#grad)" stroke="none"/>
+    </g>
+  </g>
+
+  <!-- Wordmark (right) -->
+  <g transform="translate(370,95)">
+    <text x="0" y="85" font-family="'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="96" font-weight="800" fill="#1a1a1a">Shelter</text>
+    <text x="440" y="85" font-family="'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="96" font-weight="800" fill="url(#grad)">Link</text>
+  </g>
+</svg>
+

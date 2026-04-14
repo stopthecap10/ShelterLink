@@ -1,0 +1,31 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <circle cx="512" cy="512" r="440" fill="url(#grad)"/>
+
+  <!-- Clean link + home monogram -->
+  <g stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Left link (S) -->
+    <path d="M360 520c-44 0-80-36-80-80s36-80 80-80h120" stroke-width="56" opacity="0.95"/>
+    <path d="M480 600H360c-44 0-80 36-80 80s36 80 80 80h120" stroke-width="56" opacity="0.85"/>
+
+    <!-- Right link loop around house -->
+    <path d="M544 360h120c44 0 80 36 80 80s-36 80-80 80h-84" stroke-width="56" opacity="0.95"/>
+  </g>
+
+  <!-- Minimal house in center -->
+  <g transform="translate(0,0)">
+    <path d="M442 510l70-56 70 56v116c0 8.8-7.2 16-16 16H458c-8.8 0-16-7.2-16-16V510z" fill="#ffffff"/>
+    <rect x="500" y="560" width="48" height="82" rx="8" fill="url(#grad)"/>
+  </g>
+
+  <!-- crisp ring -->
+  <circle cx="512" cy="512" r="440" fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="8"/>
+</svg>
+
