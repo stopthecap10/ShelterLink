@@ -93,9 +93,6 @@ const HomePage = () => {
   ];
 
   const stats = [
-    { number: '47', label: t('livesImpacted'), icon: <People /> },
-    { number: '3', label: t('partnerShelters'), icon: <Business /> },
-    { number: '75%', label: t('successRate'), icon: <TrendingUp /> },
     { number: '24/7', label: t('supportAvailable'), icon: <Support /> },
   ];
 
