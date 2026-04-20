@@ -53,8 +53,8 @@ export const mockShelters = [
       sunday: { open: '07:00', close: '20:00', closed: false }
     },
     rating: {
-      average: 4.2,
-      count: 234
+      average: 0,
+      count: 0
     },
     isActive: true,
     verificationStatus: 'verified',
@@ -123,8 +123,8 @@ export const mockShelters = [
       sunday: { open: '07:00', close: '20:00', closed: false }
     },
     rating: {
-      average: 4.0,
-      count: 187
+      average: 0,
+      count: 0
     },
     isActive: true,
     verificationStatus: 'verified',
@@ -187,8 +187,8 @@ export const mockShelters = [
       sunday: { open: '09:00', close: '18:00', closed: false }
     },
     rating: {
-      average: 4.5,
-      count: 312
+      average: 0,
+      count: 0
     },
     isActive: true,
     verificationStatus: 'verified',
@@ -239,8 +239,8 @@ export const mockShelters = [
       sunday: { open: '10:00', close: '20:00', closed: false }
     },
     rating: {
-      average: 4.3,
-      count: 156
+      average: 0,
+      count: 0
     },
     isActive: true,
     verificationStatus: 'verified',
@@ -291,8 +291,8 @@ export const mockShelters = [
       sunday: { open: '09:00', close: '15:00', closed: false }
     },
     rating: {
-      average: 4.1,
-      count: 278
+      average: 0,
+      count: 0
     },
     isActive: true,
     verificationStatus: 'verified',
@@ -342,8 +342,8 @@ export const mockShelters = [
       sunday: { open: '08:00', close: '20:00', closed: false }
     },
     rating: {
-      average: 4.4,
-      count: 198
+      average: 0,
+      count: 0
     },
     isActive: true,
     verificationStatus: 'verified',
@@ -394,8 +394,8 @@ export const mockShelters = [
       sunday: { open: '09:00', close: '18:00', closed: false }
     },
     rating: {
-      average: 4.6,
-      count: 124
+      average: 0,
+      count: 0
     },
     isActive: true,
     verificationStatus: 'verified',
@@ -1046,190 +1046,8 @@ export const mockJobService = {
   }
 };
 
-// Mock ratings data with real reviews
-export const mockRatings = {
-  '1': [
-    {
-      _id: 'r1',
-      shelter: '1',
-      individual: {
-        personalInfo: {
-          firstName: 'Maria',
-          lastName: 'Gonzalez'
-        }
-      },
-      overallRating: 5,
-      review: {
-        content: 'review1'
-      },
-      createdAt: new Date('2024-01-15')
-    },
-    {
-      _id: 'r2',
-      shelter: '1',
-      individual: {
-        personalInfo: {
-          firstName: 'James',
-          lastName: 'Wilson'
-        }
-      },
-      overallRating: 4,
-      review: {
-        content: 'review2'
-      },
-      createdAt: new Date('2024-01-10')
-    },
-    {
-      _id: 'r3',
-      shelter: '1',
-      individual: {
-        personalInfo: {
-          firstName: 'Sarah',
-          lastName: 'Johnson'
-        }
-      },
-      overallRating: 5,
-      review: {
-        content: 'review3'
-      },
-      createdAt: new Date('2024-01-05')
-    }
-  ],
-  '2': [
-    {
-      _id: 'r4',
-      shelter: '2',
-      individual: {
-        personalInfo: {
-          firstName: 'Michael',
-          lastName: 'Brown'
-        }
-      },
-      overallRating: 4,
-      review: {
-        content: 'review4'
-      },
-      createdAt: new Date('2024-01-12')
-    },
-    {
-      _id: 'r5',
-      shelter: '2',
-      individual: {
-        personalInfo: {
-          firstName: 'Lisa',
-          lastName: 'Davis'
-        }
-      },
-      overallRating: 5,
-      review: {
-        content: 'review5'
-      },
-      createdAt: new Date('2024-01-08')
-    }
-  ],
-  '3': [
-    {
-      _id: 'r6',
-      shelter: '3',
-      individual: {
-        personalInfo: {
-          firstName: 'Jennifer',
-          lastName: 'Martinez'
-        }
-      },
-      overallRating: 5,
-      review: {
-        content: 'review6'
-      },
-      createdAt: new Date('2024-01-14')
-    },
-    {
-      _id: 'r7',
-      shelter: '3',
-      individual: {
-        personalInfo: {
-          firstName: 'Amanda',
-          lastName: 'Taylor'
-        }
-      },
-      overallRating: 5,
-      review: {
-        content: 'review7'
-      },
-      createdAt: new Date('2024-01-09')
-    }
-  ],
-  '4': [
-    {
-      _id: 'r8',
-      shelter: '4',
-      individual: {
-        personalInfo: {
-          firstName: 'Alex',
-          lastName: 'Rodriguez'
-        }
-      },
-      overallRating: 5,
-      review: {
-        content: 'review8'
-      },
-      createdAt: new Date('2024-01-11')
-    },
-    {
-      _id: 'r9',
-      shelter: '4',
-      individual: {
-        personalInfo: {
-          firstName: 'Jordan',
-          lastName: 'Smith'
-        }
-      },
-      overallRating: 4,
-      review: {
-        content: 'review9'
-      },
-      createdAt: new Date('2024-01-07')
-    }
-  ],
-  '5': [
-    {
-      _id: 'r10',
-      shelter: '5',
-      individual: {
-        personalInfo: {
-          firstName: 'Robert',
-          lastName: 'Garcia'
-        }
-      },
-      overallRating: 4,
-      review: {
-        content: 'review10'
-      },
-      createdAt: new Date('2024-01-13')
-    },
-    {
-      _id: 'r11',
-      shelter: '5',
-      individual: {
-        personalInfo: {
-          firstName: 'David',
-          lastName: 'Lee'
-        }
-      },
-      overallRating: 5,
-      review: {
-        content: 'review11'
-      },
-      createdAt: new Date('2024-01-06')
-    }
-  ]
-};
-
 export const mockRatingService = {
   getShelterRatings: async (shelterId) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return {
-      ratings: mockRatings[shelterId] || []
-    };
+    return { ratings: [] };
   }
 };

@@ -187,17 +187,17 @@ async function seedShelters() {
       console.log(`  Updated shelter: ${shelter.name}`);
     }
 
-    shelterIds.push({ shelterId: shelter._id, shelterName: shelter.name });
+    shelterIds.push({ shelterId: shelter._id, shelterName: shelter.name, userId: user._id });
   }
 
   return shelterIds;
 }
 
 async function seedJobs(shelterIds) {
-  // Map shelter names to IDs
+  // Map shelter names to IDs and user IDs
   const shelterMap = {};
   for (const s of shelterIds) {
-    shelterMap[s.shelterName] = s.shelterId;
+    shelterMap[s.shelterName] = { shelterId: s.shelterId, userId: s.userId };
   }
 
   const now = Date.now();
@@ -265,15 +265,15 @@ async function seedJobs(shelterIds) {
   ];
 
   for (const jobSeed of jobSeeds) {
-    const shelterId = shelterMap[jobSeed.shelterName];
-    if (!shelterId) {
+    const entry = shelterMap[jobSeed.shelterName];
+    if (!entry) {
       console.log(`  Skipping job "${jobSeed.title}" — shelter not found`);
       continue;
     }
 
-    const exists = await Job.findOne({ shelter: shelterId, title: jobSeed.title });
+    const exists = await Job.findOne({ shelter: entry.shelterId, title: jobSeed.title });
     if (!exists) {
-      await Job.create({ shelter: shelterId, ...jobSeed });
+      await Job.create({ shelter: entry.shelterId, postedBy: entry.userId, ...jobSeed });
       console.log(`  Created job: ${jobSeed.title} @ ${jobSeed.shelterName}`);
     } else {
       console.log(`  Skipped job (already exists): ${jobSeed.title}`);

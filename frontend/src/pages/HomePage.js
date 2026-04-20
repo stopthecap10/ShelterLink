@@ -44,8 +44,6 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import SuccessStories from '../components/SuccessStories';
-import ImpactMetrics from '../components/ImpactMetrics';
 import LanguageToggle from '../components/LanguageToggle';
 
 const HomePage = () => {
@@ -436,21 +434,6 @@ const HomePage = () => {
           </Grid>
         </Container>
       </Box>
-
-      {/* Success Stories Section */}
-      <Box sx={{ py: 12, bgcolor: 'grey.50' }}>
-        <Container maxWidth="lg">
-          <SuccessStories />
-        </Container>
-      </Box>
-
-      {/* Impact Metrics Section */}
-      <Box sx={{ py: 12 }}>
-        <Container maxWidth="lg">
-          <ImpactMetrics />
-        </Container>
-      </Box>
-
 
       {/* CTA Section */}
       <Box

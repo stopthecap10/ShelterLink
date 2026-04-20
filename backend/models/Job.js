@@ -148,9 +148,6 @@ jobSchema.index({
   tags: "text"
 });
 
-// Index for geospatial queries
-jobSchema.index({ "location.coordinates": "2dsphere" });
-
 // Index for filtering
 jobSchema.index({ status: 1, "employment.type": 1, "compensation.type": 1 });
 

@@ -21,7 +21,6 @@ import JobDetailPage from './pages/JobDetailPage';
 import MessagesPage from './pages/MessagesPage';
 import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
-import ImpactDashboard from './components/ImpactDashboard';
 import MobileOptimization from './components/MobileOptimization';
 import PerformanceOptimization from './components/PerformanceOptimization';
 import ShelterStaffLogin from './pages/ShelterStaffLogin';
@@ -150,14 +149,6 @@ function App() {
                         <ProfilePage />
                       </Layout>
                     </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/impact"
-                  element={
-                    <Layout>
-                      <ImpactDashboard />
-                    </Layout>
                   }
                 />
                 <Route

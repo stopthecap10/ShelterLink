@@ -16,7 +16,6 @@ import {
   Divider,
   CircularProgress,
   Alert,
-  Rating,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -62,7 +61,7 @@ import LanguageToggle from '../components/LanguageToggle';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useShelterData } from '../contexts/ShelterDataContext';
-import { mockShelterService, mockRatingService } from '../api/mockData';
+import { mockShelterService } from '../api/mockData';
 
 const ShelterDetailPage = () => {
   const { id } = useParams();
@@ -72,7 +71,6 @@ const ShelterDetailPage = () => {
   const { getShelterById } = useShelterData();
   
   const [shelter, setShelter] = useState(null);
-  const [ratings, setRatings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
@@ -121,10 +119,7 @@ const ShelterDetailPage = () => {
         shelterData = await mockShelterService.getShelter(id);
       }
       
-      const ratingsData = await mockRatingService.getShelterRatings(id);
-
       setShelter(shelterData);
-      setRatings(ratingsData.ratings);
     } catch (error) {
       console.error('Error fetching shelter details:', error);
       setError('Failed to load shelter details. Please try again.');
@@ -479,20 +474,7 @@ const ShelterDetailPage = () => {
                   {shelter.name}
                 </Typography>
                 
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Rating
-                    value={shelter.rating?.average || 0}
-                    precision={0.1}
-                    readOnly
-                    size="large"
-                    sx={{ mr: 2 }}
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                    {shelter.rating?.average || 0} ({shelter.rating?.count || 0} {t('reviews')})
-                  </Typography>
-                </Box>
-
-                <Typography 
+<Typography 
                   variant="h6" 
                   sx={{ 
                     color: 'text.secondary',
@@ -804,56 +786,6 @@ const ShelterDetailPage = () => {
               </Slide>
             )}
 
-            {/* Reviews */}
-            {ratings.length > 0 && (
-              <Slide in timeout={1800} direction="up">
-                <Paper
-                  elevation={8}
-                  sx={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%)',
-                    backdropFilter: 'blur(10px)',
-                    borderRadius: 4,
-                    p: 4,
-                    mb: 3,
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                  }}
-                >
-                  <Typography 
-                    variant="h5" 
-                    gutterBottom 
-                    sx={{ 
-                      fontWeight: 700,
-                      background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                      backgroundClip: 'text',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      mb: 3
-                    }}
-                  >
-                    {t('shelterDetails.reviews')}
-                  </Typography>
-                  {ratings.map((rating, index) => (
-                    <Box key={index} sx={{ mb: 3, pb: 3, borderBottom: index < ratings.length - 1 ? 1 : 0, borderColor: 'divider' }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                          {rating.individual?.personalInfo?.firstName} {rating.individual?.personalInfo?.lastName}
-                        </Typography>
-                        <Rating value={rating.overallRating} readOnly size="small" />
-                      </Box>
-                      {rating.review?.content && (
-                        <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
-                          {t(rating.review.content)}
-                        </Typography>
-                      )}
-                      <Typography variant="caption" color="text.secondary">
-                        {new Date(rating.createdAt).toLocaleDateString()}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Paper>
-              </Slide>
-            )}
           </Grid>
 
           {/* Sidebar */}
